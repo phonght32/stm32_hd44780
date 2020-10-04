@@ -164,6 +164,7 @@ void _lcd_cleanup(lcd_handle_t handle) {
 
 
 lcd_handle_t lcd_init(lcd_cfg_t *config) {
+	/* Allocate memory for handle structure */
 	lcd_handle_t handle = calloc(1, sizeof(lcd_t));
 	LCD_CHECK(handle, LCD_INIT_ERR_STR, return NULL);
 
@@ -185,6 +186,7 @@ lcd_handle_t lcd_init(lcd_cfg_t *config) {
 		break;
 	}
 
+	/* Configure pins */
 	LCD_CHECK(!_init_func(config->pin), LCD_INIT_ERR_STR, {_lcd_cleanup(handle); return NULL;});
 
 	LCD_CHECK(!_write_cmd(config->pin, 0x02), LCD_INIT_ERR_STR, {_lcd_cleanup(handle); return NULL;});
@@ -202,6 +204,7 @@ lcd_handle_t lcd_init(lcd_cfg_t *config) {
 	LCD_CHECK(!_write_cmd(config->pin, 0x01), LCD_INIT_ERR_STR, {_lcd_cleanup(handle); return NULL;});
 	vTaskDelay(LCD_TICK_DELAY_DEFAULT / portTICK_PERIOD_MS);
 
+	/* Update handle structure */
 	handle->size = config->size;
 	handle->driver = config->driver;
 	handle->mode = config->mode;
