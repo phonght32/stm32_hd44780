@@ -215,24 +215,31 @@ lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config) {
 }
 
 stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle) {
+	mutex_lock(handle->lock);
 	handle->_write_cmd(handle->pin, 0x01);
 	vTaskDelay(2 / portTICK_PERIOD_MS);
+	mutex_unlock(handle->lock);
 
 	return STM_OK;
 }
 
 stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle) {
+	mutex_lock(handle->lock);
 	handle->_write_cmd(handle->pin, 0x02);
 	vTaskDelay(2 / portTICK_PERIOD_MS);
+	mutex_unlock(handle->lock);
 
 	return STM_OK;
 }
 
 stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str) {
+
+	mutex_lock(handle->lock);
 	while (*str) {
 		handle->_write_data(handle->pin, *str);
 		str++;
 	}
+	mutex_unlock(handle->lock);
 
 	return STM_OK;
 }
