@@ -157,7 +157,7 @@ stm_err_t _write_data_4bit(lcd_hd44780_pin_t pin, uint8_t data) {
 	return STM_OK;
 }
 
-void _lcd_cleanup(lcd_hd44780_handle_t handle) {
+void _lcd_hd44780_cleanup(lcd_hd44780_handle_t handle) {
 	free(handle);
 }
 
@@ -186,21 +186,21 @@ lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config) {
 	}
 
 	/* Configure pins */
-	LCD_CHECK(!_init_func(config->pin), LCD_INIT_ERR_STR, {_lcd_cleanup(handle); return NULL;});
+	LCD_CHECK(!_init_func(config->pin), LCD_INIT_ERR_STR, {_lcd_hd44780_cleanup(handle); return NULL;});
 
-	LCD_CHECK(!_write_cmd(config->pin, 0x02), LCD_INIT_ERR_STR, {_lcd_cleanup(handle); return NULL;});
+	LCD_CHECK(!_write_cmd(config->pin, 0x02), LCD_INIT_ERR_STR, {_lcd_hd44780_cleanup(handle); return NULL;});
 	vTaskDelay(LCD_TICK_DELAY_DEFAULT / portTICK_PERIOD_MS);
 
-	LCD_CHECK(!_write_cmd(config->pin, 0x28), LCD_INIT_ERR_STR, {_lcd_cleanup(handle); return NULL;});
+	LCD_CHECK(!_write_cmd(config->pin, 0x28), LCD_INIT_ERR_STR, {_lcd_hd44780_cleanup(handle); return NULL;});
 	vTaskDelay(LCD_TICK_DELAY_DEFAULT / portTICK_PERIOD_MS);
 
-	LCD_CHECK(!_write_cmd(config->pin, 0x06), LCD_INIT_ERR_STR, {_lcd_cleanup(handle); return NULL;});
+	LCD_CHECK(!_write_cmd(config->pin, 0x06), LCD_INIT_ERR_STR, {_lcd_hd44780_cleanup(handle); return NULL;});
 	vTaskDelay(LCD_TICK_DELAY_DEFAULT / portTICK_PERIOD_MS);
 
-	LCD_CHECK(!_write_cmd(config->pin, 0x0C), LCD_INIT_ERR_STR, {_lcd_cleanup(handle); return NULL;});
+	LCD_CHECK(!_write_cmd(config->pin, 0x0C), LCD_INIT_ERR_STR, {_lcd_hd44780_cleanup(handle); return NULL;});
 	vTaskDelay(LCD_TICK_DELAY_DEFAULT / portTICK_PERIOD_MS);
 
-	LCD_CHECK(!_write_cmd(config->pin, 0x01), LCD_INIT_ERR_STR, {_lcd_cleanup(handle); return NULL;});
+	LCD_CHECK(!_write_cmd(config->pin, 0x01), LCD_INIT_ERR_STR, {_lcd_hd44780_cleanup(handle); return NULL;});
 	vTaskDelay(LCD_TICK_DELAY_DEFAULT / portTICK_PERIOD_MS);
 
 	/* Update handle structure */
