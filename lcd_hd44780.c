@@ -25,21 +25,20 @@ static const char *TAG = "LCD_DRIVER";
 	action;																	\
 }
 
-typedef stm_err_t (*init_func)(lcd_pin_t pin);
-typedef stm_err_t (*write_func)(lcd_pin_t pin, uint8_t data);
+typedef stm_err_t (*init_func)(lcd_hd44780_pin_t pin);
+typedef stm_err_t (*write_func)(lcd_hd44780_pin_t pin, uint8_t data);
 
-typedef struct lcd {
-	lcd_size_t 			size;
-	lcd_driver_t 		driver;
-	lcd_comm_mode_t 	mode;
-	lcd_pin_t			pin;
-	write_func 			_write_cmd;
-	write_func 			_write_data;
-	SemaphoreHandle_t	lock;
-} lcd_t;
+typedef struct lcd_hd44780 {
+	lcd_hd44780_size_t 			size;
+	lcd_hd44780_comm_mode_t 	mode;
+	lcd_hd44780_pin_t			pin;
+	write_func 					_write_cmd;
+	write_func 					_write_data;
+	SemaphoreHandle_t			lock;
+} lcd_hd44780_t;
 
 
-stm_err_t _init_mode_4bit(lcd_pin_t pin) {
+stm_err_t _init_mode_4bit(lcd_hd44780_pin_t pin) {
 
 	gpio_cfg_t gpio_cfg;
 	gpio_cfg.mode = GPIO_OUTPUT_PP;
@@ -76,7 +75,7 @@ stm_err_t _init_mode_4bit(lcd_pin_t pin) {
 	return STM_OK;
 }
 
-stm_err_t _write_cmd_4bit(lcd_pin_t pin, uint8_t cmd) {
+stm_err_t _write_cmd_4bit(lcd_hd44780_pin_t pin, uint8_t cmd) {
 
 	bool bit_data;
 	uint8_t nibble_h = cmd >> 4 & 0x0F;
@@ -117,7 +116,7 @@ stm_err_t _write_cmd_4bit(lcd_pin_t pin, uint8_t cmd) {
 	return STM_OK;
 }
 
-stm_err_t _write_data_4bit(lcd_pin_t pin, uint8_t data) {
+stm_err_t _write_data_4bit(lcd_hd44780_pin_t pin, uint8_t data) {
 
 	bool bit_data;
 	uint8_t nibble_h = data >> 4 & 0x0F;
@@ -158,14 +157,14 @@ stm_err_t _write_data_4bit(lcd_pin_t pin, uint8_t data) {
 	return STM_OK;
 }
 
-void _lcd_cleanup(lcd_handle_t handle) {
+void _lcd_cleanup(lcd_hd44780_handle_t handle) {
 	free(handle);
 }
 
 
-lcd_handle_t lcd_init(lcd_cfg_t *config) {
+lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config) {
 	/* Allocate memory for handle structure */
-	lcd_handle_t handle = calloc(1, sizeof(lcd_t));
+	lcd_hd44780_handle_t handle = calloc(1, sizeof(lcd_hd44780_t));
 	LCD_CHECK(handle, LCD_INIT_ERR_STR, return NULL);
 
 	init_func _init_func;
@@ -173,14 +172,14 @@ lcd_handle_t lcd_init(lcd_cfg_t *config) {
 	write_func _write_data;
 
 	switch (config->mode) {
-	case LCD_COMM_MODE_4BIT:
+	case LCD_HD44780_COMM_MODE_4BIT:
 		_init_func = _init_mode_4bit;
 		_write_cmd = _write_cmd_4bit;
 		_write_data = _write_data_4bit;
 		break;
-	case LCD_COMM_MODE_8BIT:
+	case LCD_HD44780_COMM_MODE_8BIT:
 		break;
-	case LCD_COMM_MODE_SERIAL:
+	case LCD_HD44780_COMM_MODE_SERIAL:
 		break;
 	default:
 		break;
@@ -206,7 +205,6 @@ lcd_handle_t lcd_init(lcd_cfg_t *config) {
 
 	/* Update handle structure */
 	handle->size = config->size;
-	handle->driver = config->driver;
 	handle->mode = config->mode;
 	handle->pin = config->pin;
 	handle->_write_cmd = _write_cmd_4bit;
@@ -216,21 +214,21 @@ lcd_handle_t lcd_init(lcd_cfg_t *config) {
 	return handle;
 }
 
-stm_err_t lcd_clear(lcd_handle_t handle) {
+stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle) {
 	handle->_write_cmd(handle->pin, 0x01);
 	vTaskDelay(2 / portTICK_PERIOD_MS);
 
 	return STM_OK;
 }
 
-stm_err_t lcd_home(lcd_handle_t handle) {
+stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle) {
 	handle->_write_cmd(handle->pin, 0x02);
 	vTaskDelay(2 / portTICK_PERIOD_MS);
 
 	return STM_OK;
 }
 
-stm_err_t lcd_write_string(lcd_handle_t handle, uint8_t *str) {
+stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str) {
 	while (*str) {
 		handle->_write_data(handle->pin, *str);
 		str++;

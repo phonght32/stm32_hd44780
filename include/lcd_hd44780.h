@@ -32,60 +32,52 @@ extern "C" {
 #include "driver/gpio.h"
 #include "driver/i2c.h"
 
-typedef struct lcd *lcd_handle_t;			/* LCD handle structure */
+typedef struct lcd_hd44780 *lcd_hd44780_handle_t;	/* LCD handle structure */
 
 typedef enum {
-	LCD_SIZE_16_2 = 0,						/*!< LCD size 16x2 */
-	LCD_SIZE_16_4,							/*!< LCD size 16x4 */
-	LCD_SIZE_20_4,							/*!< LCD size 20x4 */
-	LCD_SIZE_128_64,						/*!< LCD size 128x64 */
-} lcd_size_t;
+	LCD_HD44780_SIZE_16_2 = 0,						/*!< LCD size 16x2 */
+	LCD_HD44780_SIZE_16_4,							/*!< LCD size 16x4 */
+	LCD_HD44780_SIZE_20_4,							/*!< LCD size 20x4 */
+} lcd_hd44780_size_t;
 
 typedef enum {
-	LCD_DRIVER_HD44780,						/*!< Use HD44780 driver */	
-	LCD_DRIVER_ST9720,						/*!< Use ST9720 driver */
-	LCD_DRIVER_PCF_8574,					/*!< Use PCF8574 driver */
-} lcd_driver_t;
-
-typedef enum {
-	LCD_COMM_MODE_4BIT = 0,					/*!< Communicate with LCD over 4bit data mode */
-	LCD_COMM_MODE_8BIT,						/*!< Communicate with LCD over 8bit data mode */
-	LCD_COMM_MODE_SERIAL,					/*!< Communicate with LCD over serial data mode */
-} lcd_comm_mode_t;
+	LCD_HD44780_COMM_MODE_4BIT = 0,					/*!< Communicate with LCD over 4bit data mode */
+	LCD_HD44780_COMM_MODE_8BIT,						/*!< Communicate with LCD over 8bit data mode */
+	LCD_HD44780_COMM_MODE_SERIAL,					/*!< Communicate with LCD over serial data mode */
+} lcd_hd44780_comm_mode_t;
 
 typedef struct {
-	gpio_port_t		gpio_port_rs;			/*!< GPIO Port RS */
-	gpio_num_t		gpio_num_rs;			/*!< GPIO Num RS */
-	gpio_port_t		gpio_port_rw;			/*!< GPIO Port RW */
-	gpio_num_t		gpio_num_rw;			/*!< GPIO Num RW */
-	gpio_port_t		gpio_port_en;			/*!< GPIO Port EN */
-	gpio_num_t		gpio_num_en;			/*!< GPIO Num EN */
-	gpio_port_t		gpio_port_d0;			/*!< GPIO Port D0 */
-	gpio_num_t		gpio_num_d0;			/*!< GPIO Num D0 */
-	gpio_port_t		gpio_port_d1;			/*!< GPIO Port D1 */
-	gpio_num_t		gpio_num_d1;			/*!< GPIO Num D1 */
-	gpio_port_t		gpio_port_d2;			/*!< GPIO Port D2 */
-	gpio_num_t		gpio_num_d2;			/*!< GPIO Num D2 */
-	gpio_port_t		gpio_port_d3;			/*!< GPIO Port D3 */
-	gpio_num_t		gpio_num_d3;			/*!< GPIO Num D3 */
-	gpio_port_t		gpio_port_d4;			/*!< GPIO Port D4 */
-	gpio_num_t		gpio_num_d4;			/*!< GPIO Num D4 */
-	gpio_port_t		gpio_port_d5;			/*!< GPIO Port D5 */
-	gpio_num_t		gpio_num_d5;			/*!< GPIO Num D5 */
-	gpio_port_t		gpio_port_d6;			/*!< GPIO Port D6 */
-	gpio_num_t		gpio_num_d6;			/*!< GPIO Num D6 */
-	gpio_port_t		gpio_port_d7;			/*!< GPIO Port D7 */
-	gpio_num_t		gpio_num_d7;			/*!< GPIO Num D7 */
-	i2c_num_t		i2c_num;				/*!< I2C Num for serial mode*/
-	i2c_pins_pack_t	i2c_pins_pack;			/*!< I2C Pins Pack for serial mode */
-} lcd_pin_t;
+	gpio_port_t		gpio_port_rs;					/*!< GPIO Port RS */
+	gpio_num_t		gpio_num_rs;					/*!< GPIO Num RS */
+	gpio_port_t		gpio_port_rw;					/*!< GPIO Port RW */
+	gpio_num_t		gpio_num_rw;					/*!< GPIO Num RW */
+	gpio_port_t		gpio_port_en;					/*!< GPIO Port EN */
+	gpio_num_t		gpio_num_en;					/*!< GPIO Num EN */
+	gpio_port_t		gpio_port_d0;					/*!< GPIO Port D0 */
+	gpio_num_t		gpio_num_d0;					/*!< GPIO Num D0 */
+	gpio_port_t		gpio_port_d1;					/*!< GPIO Port D1 */
+	gpio_num_t		gpio_num_d1;					/*!< GPIO Num D1 */
+	gpio_port_t		gpio_port_d2;					/*!< GPIO Port D2 */
+	gpio_num_t		gpio_num_d2;					/*!< GPIO Num D2 */
+	gpio_port_t		gpio_port_d3;					/*!< GPIO Port D3 */
+	gpio_num_t		gpio_num_d3;					/*!< GPIO Num D3 */
+	gpio_port_t		gpio_port_d4;					/*!< GPIO Port D4 */
+	gpio_num_t		gpio_num_d4;					/*!< GPIO Num D4 */
+	gpio_port_t		gpio_port_d5;					/*!< GPIO Port D5 */
+	gpio_num_t		gpio_num_d5;					/*!< GPIO Num D5 */
+	gpio_port_t		gpio_port_d6;					/*!< GPIO Port D6 */
+	gpio_num_t		gpio_num_d6;					/*!< GPIO Num D6 */
+	gpio_port_t		gpio_port_d7;					/*!< GPIO Port D7 */
+	gpio_num_t		gpio_num_d7;					/*!< GPIO Num D7 */
+	i2c_num_t		i2c_num;						/*!< I2C Num for serial mode*/
+	i2c_pins_pack_t	i2c_pins_pack;					/*!< I2C Pins Pack for serial mode */
+} lcd_hd44780_pin_t;
 
 typedef struct {
-	lcd_size_t 			size;				/*!< LCD size */
-	lcd_driver_t 		driver;				/*!< LCD driver */
-	lcd_comm_mode_t 	mode;				/*!< LCD communicate mode */
-	lcd_pin_t			pin;				/*!< LCD pins */
-} lcd_cfg_t;
+	lcd_hd44780_size_t 			size;				/*!< LCD size */
+	lcd_hd44780_comm_mode_t 	mode;				/*!< LCD communicate mode */
+	lcd_hd44780_pin_t			pin;				/*!< LCD pins */
+} lcd_hd44780_cfg_t;
 
 /*
  * @brief   Initialize Liquid-Crystal Display (LCD).
@@ -94,7 +86,7 @@ typedef struct {
  *      - LCD handle structure: Success.
  *      - 0: Fail.
  */
-lcd_handle_t lcd_init(lcd_cfg_t *config);
+lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config);
 
 /*
  * @brief   Clear LCD screen.
@@ -103,7 +95,7 @@ lcd_handle_t lcd_init(lcd_cfg_t *config);
  *      - STM_OK:   Success.
  *      - STM_FAIL: Fail.
  */
-stm_err_t lcd_clear(lcd_handle_t handle);
+stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle);
 
 /*
  * @brief   Set LCD cursor to home.
@@ -112,7 +104,7 @@ stm_err_t lcd_clear(lcd_handle_t handle);
  *      - STM_OK:   Success.
  *      - STM_FAIL: Fail.
  */
-stm_err_t lcd_home(lcd_handle_t handle);
+stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle);
 
 /*
  * @brief   Display string.
@@ -122,7 +114,7 @@ stm_err_t lcd_home(lcd_handle_t handle);
  *      - STM_OK:   Success.
  *      - STM_FAIL: Fail.
  */
-stm_err_t lcd_write_string(lcd_handle_t handle, uint8_t *str);
+stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str);
  
 
 #ifdef __cplusplus
