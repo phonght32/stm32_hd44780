@@ -4,7 +4,7 @@
 #include "freertos/task.h"
 
 #include "stm_log.h"
-#include "include/lcd.h"
+#include "include/lcd_hd44780.h"
 
 #define LCD_TICK_DELAY_DEFAULT		50
 
