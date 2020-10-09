@@ -72,6 +72,14 @@ stm_err_t _init_mode_4bit(lcd_hd44780_pin_t pin) {
 	gpio_cfg.gpio_num = pin.gpio_num_d7;
 	LCD_CHECK(!gpio_config(&gpio_cfg), LCD_INIT_ERR_STR, return STM_FAIL);
 
+	LCD_CHECK(!gpio_set_level(pin.gpio_port_rs, pin.gpio_num_rs, 0), LCD_INIT_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(pin.gpio_port_rw, pin.gpio_num_rw, 0), LCD_INIT_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(pin.gpio_port_en, pin.gpio_num_en, 0), LCD_INIT_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(pin.gpio_port_d4, pin.gpio_num_d4, 0), LCD_INIT_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(pin.gpio_port_d5, pin.gpio_num_d5, 0), LCD_INIT_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(pin.gpio_port_d6, pin.gpio_num_d6, 0), LCD_INIT_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(pin.gpio_port_d7, pin.gpio_num_d7, 0), LCD_INIT_ERR_STR, return STM_FAIL);
+	
 	return STM_OK;
 }
 
@@ -83,6 +91,7 @@ stm_err_t _write_cmd_4bit(lcd_hd44780_pin_t pin, uint8_t cmd) {
 
 	/* Set pin RS to write to command register */
 	LCD_CHECK(!gpio_set_level(pin.gpio_port_rs, pin.gpio_num_rs, false), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(pin.gpio_port_rw, pin.gpio_num_rw, false), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
 
 	/* Write high nibble */
 	bit_data = (nibble_h >> 0) & 0x01;
@@ -124,7 +133,8 @@ stm_err_t _write_data_4bit(lcd_hd44780_pin_t pin, uint8_t data) {
 
 	/* Set pin RS to high to write to data register */
 	LCD_CHECK(!gpio_set_level(pin.gpio_port_rs, pin.gpio_num_rs, true), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
-
+	LCD_CHECK(!gpio_set_level(pin.gpio_port_rw, pin.gpio_num_rw, false), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	
 	/* Write high nibble */
 	bit_data = (nibble_h >> 0) & 0x01;
 	LCD_CHECK(!gpio_set_level(pin.gpio_port_d4, pin.gpio_num_d4, bit_data), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
