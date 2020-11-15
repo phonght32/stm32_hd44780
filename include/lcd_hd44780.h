@@ -71,12 +71,12 @@ typedef struct {
 	gpio_num_t		gpio_num_d7;					/*!< GPIO Num D7 */
 	i2c_num_t		i2c_num;						/*!< I2C Num for serial mode*/
 	i2c_pins_pack_t	i2c_pins_pack;					/*!< I2C Pins Pack for serial mode */
-} lcd_hd44780_pin_t;
+} lcd_hd44780_hardware_info_t;
 
 typedef struct {
-	lcd_hd44780_size_t 			size;				/*!< LCD size */
-	lcd_hd44780_comm_mode_t 	mode;				/*!< LCD communicate mode */
-	lcd_hd44780_pin_t			pin;				/*!< LCD pins */
+	lcd_hd44780_size_t 				size;			/*!< LCD size */
+	lcd_hd44780_comm_mode_t 		mode;			/*!< LCD communicate mode */
+	lcd_hd44780_hardware_info_t		hw_info;		/*!< LCD hardware information */
 } lcd_hd44780_cfg_t;
 
 /*
