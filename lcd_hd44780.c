@@ -9,6 +9,7 @@
 #define LCD_TICK_DELAY_DEFAULT		50
 
 #define LCD_INIT_ERR_STR		"lcd init error"
+#define LCD_READ_ERR_STR		"lcd read error"
 #define LCD_WRITE_CMD_ERR_STR	"lcd write command error"
 #define LCD_CLEAR_ERR_STR		"lcd clear error"
 #define LCD_HOME_ERR_STR		"lcd home error"
@@ -27,7 +28,8 @@ static const char *TAG = "LCD_DRIVER";
 
 typedef stm_err_t (*init_func)(lcd_hd44780_hardware_info_t hw_info);
 typedef stm_err_t (*write_func)(lcd_hd44780_hardware_info_t hw_info, uint8_t data);
-typedef void (*wait_func)(lcd_hd44780_hardware_info_t hw_info);
+typedef stm_err_t (*read_func)(lcd_hd44780_hardware_info_t hw_info, uint8_t *buf);
+typedef void (*wait_func)(lcd_hd44780_handle_t handle);
 
 typedef struct lcd_hd44780 {
 	lcd_hd44780_size_t 				size;
@@ -98,7 +100,7 @@ stm_err_t _write_cmd_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd)
 	if ((hw_info.gpio_port_rw != -1) && (hw_info.gpio_num_rw != -1)) {
 		LCD_CHECK(!gpio_set_level(hw_info.gpio_port_rw, hw_info.gpio_num_rw, false), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
 	}
-	
+
 	/* Write high nibble */
 	bit_data = (nibble_h >> 0) & 0x01;
 	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d4, hw_info.gpio_num_d4, bit_data), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
@@ -176,14 +178,116 @@ stm_err_t _write_data_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t data)
 	return STM_OK;
 }
 
-void _wait_with_delay(lcd_hd44780_hardware_info_t hw_info)
+stm_err_t _read_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t *buf)
+{
+	gpio_cfg_t gpio_cfg;
+	bool bit_data;
+	uint8_t nibble_h, nibble_l;
+
+	/* Set GPIOs as input mode */
+	gpio_cfg.mode = GPIO_INPUT;
+	gpio_cfg.reg_pull_mode = GPIO_REG_PULL_NONE;
+
+	gpio_cfg.gpio_port = hw_info.gpio_port_d4;
+	gpio_cfg.gpio_num = hw_info.gpio_num_d4;
+	LCD_CHECK(!gpio_config(&gpio_cfg), LCD_INIT_ERR_STR, return STM_FAIL);
+
+	gpio_cfg.gpio_port = hw_info.gpio_port_d5;
+	gpio_cfg.gpio_num = hw_info.gpio_num_d5;
+	LCD_CHECK(!gpio_config(&gpio_cfg), LCD_INIT_ERR_STR, return STM_FAIL);
+
+	gpio_cfg.gpio_port = hw_info.gpio_port_d6;
+	gpio_cfg.gpio_num = hw_info.gpio_num_d6;
+	LCD_CHECK(!gpio_config(&gpio_cfg), LCD_INIT_ERR_STR, return STM_FAIL);
+
+	gpio_cfg.gpio_port = hw_info.gpio_port_d7;
+	gpio_cfg.gpio_num = hw_info.gpio_num_d7;
+	LCD_CHECK(!gpio_config(&gpio_cfg), LCD_INIT_ERR_STR, return STM_FAIL);
+
+	/* Read high nibble */
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_en, hw_info.gpio_num_en, true), LCD_READ_ERR_STR, return STM_FAIL);
+	vTaskDelay(1 / portTICK_PERIOD_MS);
+	bit_data = gpio_get_level(hw_info.gpio_port_d4, hw_info.gpio_num_d4);
+	if (bit_data)
+		nibble_h |= (1 << 0);
+	bit_data = gpio_get_level(hw_info.gpio_port_d5, hw_info.gpio_num_d5);
+	if (bit_data)
+		nibble_h |= (1 << 1);
+	bit_data = gpio_get_level(hw_info.gpio_port_d6, hw_info.gpio_num_d6);
+	if (bit_data)
+		nibble_h |= (1 << 2);
+	bit_data = gpio_get_level(hw_info.gpio_port_d7, hw_info.gpio_num_d7);
+	if (bit_data)
+		nibble_h |= (1 << 3);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_en, hw_info.gpio_num_en, false), LCD_READ_ERR_STR, return STM_FAIL);
+	vTaskDelay(1 / portTICK_PERIOD_MS);
+
+	/* Read low nibble */
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_en, hw_info.gpio_num_en, true), LCD_READ_ERR_STR, return STM_FAIL);
+	vTaskDelay(1 / portTICK_PERIOD_MS);
+	bit_data = gpio_get_level(hw_info.gpio_port_d4, hw_info.gpio_num_d4);
+	if (bit_data)
+		nibble_l |= (1 << 0);
+	bit_data = gpio_get_level(hw_info.gpio_port_d5, hw_info.gpio_num_d5);
+	if (bit_data)
+		nibble_l |= (1 << 1);
+	bit_data = gpio_get_level(hw_info.gpio_port_d6, hw_info.gpio_num_d6);
+	if (bit_data)
+		nibble_l |= (1 << 2);
+	bit_data = gpio_get_level(hw_info.gpio_port_d7, hw_info.gpio_num_d7);
+	if (bit_data)
+		nibble_l |= (1 << 3);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_en, hw_info.gpio_num_en, false), LCD_READ_ERR_STR, return STM_FAIL);
+	vTaskDelay(1 / portTICK_PERIOD_MS);
+
+	/* Set GPIOs as output mode */
+	gpio_cfg.mode = GPIO_OUTPUT_PP;
+	gpio_cfg.reg_pull_mode = GPIO_REG_PULL_NONE;
+
+	gpio_cfg.gpio_port = hw_info.gpio_port_d4;
+	gpio_cfg.gpio_num = hw_info.gpio_num_d4;
+	LCD_CHECK(!gpio_config(&gpio_cfg), LCD_INIT_ERR_STR, return STM_FAIL);
+
+	gpio_cfg.gpio_port = hw_info.gpio_port_d5;
+	gpio_cfg.gpio_num = hw_info.gpio_num_d5;
+	LCD_CHECK(!gpio_config(&gpio_cfg), LCD_INIT_ERR_STR, return STM_FAIL);
+
+	gpio_cfg.gpio_port = hw_info.gpio_port_d6;
+	gpio_cfg.gpio_num = hw_info.gpio_num_d6;
+	LCD_CHECK(!gpio_config(&gpio_cfg), LCD_INIT_ERR_STR, return STM_FAIL);
+
+	gpio_cfg.gpio_port = hw_info.gpio_port_d7;
+	gpio_cfg.gpio_num = hw_info.gpio_num_d7;
+	LCD_CHECK(!gpio_config(&gpio_cfg), LCD_INIT_ERR_STR, return STM_FAIL);
+
+	/* Convert data */
+	*buf = ((nibble_h << 4) | nibble_l);
+
+	return STM_OK;
+}
+
+static void _wait_with_delay(lcd_hd44780_handle_t handle)
 {
 	vTaskDelay(2 / portTICK_PERIOD_MS);
 }
 
-void _wait_with_pinrw(lcd_hd44780_hardware_info_t hw_info)
+static void _wait_with_pinrw(lcd_hd44780_handle_t handle)
 {
-	vTaskDelay(2 / portTICK_PERIOD_MS);
+	read_func _read;
+	uint8_t temp_val;
+
+	if (handle->mode == LCD_HD44780_COMM_MODE_4BIT) {
+		_read = _read_4bit;
+	}
+	
+	while (1) {
+		gpio_set_level(handle->hw_info.gpio_port_rs, handle->hw_info.gpio_num_rs, false);
+		gpio_set_level(handle->hw_info.gpio_port_rw, handle->hw_info.gpio_num_rw, true);
+
+		_read(handle->hw_info, &temp_val);
+		if ((temp_val & 0x80) == 0) 
+			break;
+	}
 }
 
 static init_func _get_init_func(lcd_hd44780_comm_mode_t mode)
@@ -230,6 +334,12 @@ lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config)
 	init_func _init_func = _get_init_func(config->mode);
 	write_func _write_cmd = _get_write_cmd_func(config->mode);
 
+	/* Make sure that RS pin not used in serial mode */
+	if (config->mode == LCD_HD44780_COMM_MODE_SERIAL) {
+		config->hw_info.gpio_port_rw = -1;
+		config->hw_info.gpio_num_rw = -1;
+	}
+
 	/* Configure hw_infos */
 	LCD_CHECK(!_init_func(config->hw_info), LCD_INIT_ERR_STR, {_lcd_hd44780_cleanup(handle); return NULL;});
 
@@ -264,7 +374,7 @@ stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle)
 {
 	mutex_lock(handle->lock);
 	handle->_write_cmd(handle->hw_info, 0x01);
-	handle->_wait(handle->hw_info);
+	handle->_wait(handle);
 	mutex_unlock(handle->lock);
 
 	return STM_OK;
@@ -274,7 +384,7 @@ stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle)
 {
 	mutex_lock(handle->lock);
 	handle->_write_cmd(handle->hw_info, 0x02);
-	handle->_wait(handle->hw_info);
+	handle->_wait(handle);
 	mutex_unlock(handle->lock);
 
 	return STM_OK;
