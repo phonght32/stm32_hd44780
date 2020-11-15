@@ -38,8 +38,8 @@ typedef struct lcd_hd44780 {
 } lcd_hd44780_t;
 
 
-stm_err_t _init_mode_4bit(lcd_hd44780_hardware_info_t hw_info) {
-
+stm_err_t _init_mode_4bit(lcd_hd44780_hardware_info_t hw_info) 
+{
 	gpio_cfg_t gpio_cfg;
 	gpio_cfg.mode = GPIO_OUTPUT_PP;
 	gpio_cfg.reg_pull_mode = GPIO_REG_PULL_NONE;
@@ -79,12 +79,12 @@ stm_err_t _init_mode_4bit(lcd_hd44780_hardware_info_t hw_info) {
 	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d5, hw_info.gpio_num_d5, 0), LCD_INIT_ERR_STR, return STM_FAIL);
 	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d6, hw_info.gpio_num_d6, 0), LCD_INIT_ERR_STR, return STM_FAIL);
 	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d7, hw_info.gpio_num_d7, 0), LCD_INIT_ERR_STR, return STM_FAIL);
-	
+
 	return STM_OK;
 }
 
-stm_err_t _write_cmd_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd) {
-
+stm_err_t _write_cmd_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd) 
+{
 	bool bit_data;
 	uint8_t nibble_h = cmd >> 4 & 0x0F;
 	uint8_t nibble_l = cmd & 0x0F;
@@ -125,8 +125,8 @@ stm_err_t _write_cmd_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd) {
 	return STM_OK;
 }
 
-stm_err_t _write_data_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t data) {
-
+stm_err_t _write_data_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t data) 
+{
 	bool bit_data;
 	uint8_t nibble_h = data >> 4 & 0x0F;
 	uint8_t nibble_l = data & 0x0F;
@@ -134,7 +134,7 @@ stm_err_t _write_data_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t data) {
 	/* Set hw_info RS to high to write to data register */
 	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_rs, hw_info.gpio_num_rs, true), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
 	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_rw, hw_info.gpio_num_rw, false), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
-	
+
 	/* Write high nibble */
 	bit_data = (nibble_h >> 0) & 0x01;
 	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d4, hw_info.gpio_num_d4, bit_data), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
@@ -167,12 +167,14 @@ stm_err_t _write_data_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t data) {
 	return STM_OK;
 }
 
-void _lcd_hd44780_cleanup(lcd_hd44780_handle_t handle) {
+void _lcd_hd44780_cleanup(lcd_hd44780_handle_t handle) 
+{
 	free(handle);
 }
 
 
-lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config) {
+lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config) 
+{
 	/* Allocate memory for handle structure */
 	lcd_hd44780_handle_t handle = calloc(1, sizeof(lcd_hd44780_t));
 	LCD_CHECK(handle, LCD_INIT_ERR_STR, return NULL);
@@ -224,7 +226,8 @@ lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config) {
 	return handle;
 }
 
-stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle) {
+stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle) 
+{
 	mutex_lock(handle->lock);
 	handle->_write_cmd(handle->hw_info, 0x01);
 	vTaskDelay(2 / portTICK_PERIOD_MS);
@@ -233,7 +236,8 @@ stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle) {
 	return STM_OK;
 }
 
-stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle) {
+stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle) 
+{
 	mutex_lock(handle->lock);
 	handle->_write_cmd(handle->hw_info, 0x02);
 	vTaskDelay(2 / portTICK_PERIOD_MS);
@@ -242,8 +246,8 @@ stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle) {
 	return STM_OK;
 }
 
-stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str) {
-
+stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str) 
+{
 	mutex_lock(handle->lock);
 	while (*str) {
 		handle->_write_data(handle->hw_info, *str);
