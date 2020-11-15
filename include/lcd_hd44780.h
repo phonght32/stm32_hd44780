@@ -47,28 +47,28 @@ typedef enum {
 } lcd_hd44780_comm_mode_t;
 
 typedef struct {
-	gpio_port_t		gpio_port_rs;					/*!< GPIO Port RS */
-	gpio_num_t		gpio_num_rs;					/*!< GPIO Num RS */
-	gpio_port_t		gpio_port_rw;					/*!< GPIO Port RW */
-	gpio_num_t		gpio_num_rw;					/*!< GPIO Num RW */
-	gpio_port_t		gpio_port_en;					/*!< GPIO Port EN */
-	gpio_num_t		gpio_num_en;					/*!< GPIO Num EN */
-	gpio_port_t		gpio_port_d0;					/*!< GPIO Port D0 */
-	gpio_num_t		gpio_num_d0;					/*!< GPIO Num D0 */
-	gpio_port_t		gpio_port_d1;					/*!< GPIO Port D1 */
-	gpio_num_t		gpio_num_d1;					/*!< GPIO Num D1 */
-	gpio_port_t		gpio_port_d2;					/*!< GPIO Port D2 */
-	gpio_num_t		gpio_num_d2;					/*!< GPIO Num D2 */
-	gpio_port_t		gpio_port_d3;					/*!< GPIO Port D3 */
-	gpio_num_t		gpio_num_d3;					/*!< GPIO Num D3 */
-	gpio_port_t		gpio_port_d4;					/*!< GPIO Port D4 */
-	gpio_num_t		gpio_num_d4;					/*!< GPIO Num D4 */
-	gpio_port_t		gpio_port_d5;					/*!< GPIO Port D5 */
-	gpio_num_t		gpio_num_d5;					/*!< GPIO Num D5 */
-	gpio_port_t		gpio_port_d6;					/*!< GPIO Port D6 */
-	gpio_num_t		gpio_num_d6;					/*!< GPIO Num D6 */
-	gpio_port_t		gpio_port_d7;					/*!< GPIO Port D7 */
-	gpio_num_t		gpio_num_d7;					/*!< GPIO Num D7 */
+	int		gpio_port_rs;					/*!< GPIO Port RS */
+	int		gpio_num_rs;					/*!< GPIO Num RS */
+	int		gpio_port_rw;					/*!< GPIO Port RW */
+	int		gpio_num_rw;					/*!< GPIO Num RW */
+	int		gpio_port_en;					/*!< GPIO Port EN */
+	int		gpio_num_en;					/*!< GPIO Num EN */
+	int		gpio_port_d0;					/*!< GPIO Port D0 */
+	int		gpio_num_d0;					/*!< GPIO Num D0 */
+	int		gpio_port_d1;					/*!< GPIO Port D1 */
+	int		gpio_num_d1;					/*!< GPIO Num D1 */
+	int		gpio_port_d2;					/*!< GPIO Port D2 */
+	int		gpio_num_d2;					/*!< GPIO Num D2 */
+	int		gpio_port_d3;					/*!< GPIO Port D3 */
+	int		gpio_num_d3;					/*!< GPIO Num D3 */
+	int		gpio_port_d4;					/*!< GPIO Port D4 */
+	int		gpio_num_d4;					/*!< GPIO Num D4 */
+	int		gpio_port_d5;					/*!< GPIO Port D5 */
+	int		gpio_num_d5;					/*!< GPIO Num D5 */
+	int		gpio_port_d6;					/*!< GPIO Port D6 */
+	int		gpio_num_d6;					/*!< GPIO Num D6 */
+	int		gpio_port_d7;					/*!< GPIO Port D7 */
+	int		gpio_num_d7;					/*!< GPIO Num D7 */
 	i2c_num_t		i2c_num;						/*!< I2C Num for serial mode*/
 	i2c_pins_pack_t	i2c_pins_pack;					/*!< I2C Pins Pack for serial mode */
 } lcd_hd44780_hardware_info_t;
