@@ -13,6 +13,7 @@
 #define LCD_WRITE_CMD_ERR_STR	"lcd write command error"
 #define LCD_CLEAR_ERR_STR		"lcd clear error"
 #define LCD_HOME_ERR_STR		"lcd home error"
+#define LCD_GOTOXY_ERR_STR		"lcd goto position (x,y) error"
 
 #define mutex_lock(x)			while (xSemaphoreTake(x, portMAX_DELAY) != pdPASS)
 #define mutex_unlock(x) 		xSemaphoreGive(x)
@@ -279,13 +280,13 @@ static void _wait_with_pinrw(lcd_hd44780_handle_t handle)
 	if (handle->mode == LCD_HD44780_COMM_MODE_4BIT) {
 		_read = _read_4bit;
 	}
-	
+
 	while (1) {
 		gpio_set_level(handle->hw_info.gpio_port_rs, handle->hw_info.gpio_num_rs, false);
 		gpio_set_level(handle->hw_info.gpio_port_rw, handle->hw_info.gpio_num_rw, true);
 
 		_read(handle->hw_info, &temp_val);
-		if ((temp_val & 0x80) == 0) 
+		if ((temp_val & 0x80) == 0)
 			break;
 	}
 }
@@ -406,6 +407,27 @@ stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str)
 		handle->_write_data(handle->hw_info, *str);
 		str++;
 	}
+	mutex_unlock(handle->lock);
+
+	return STM_OK;
+}
+
+stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t row)
+{
+	mutex_lock(handle->lock);
+
+	/* Set hw_info RS to high to write to command register */
+	LCD_CHECK(!gpio_set_level(handle->hw_info.gpio_port_rs, handle->hw_info.gpio_num_rs, false), LCD_GOTOXY_ERR_STR, return STM_FAIL);
+
+	if (row == 0)
+		handle->_write_cmd(handle->hw_info, 0x80 + col);
+	else if (row == 1)
+		handle->_write_cmd(handle->hw_info, 0xC0 + col);
+	else if (row == 2)
+		handle->_write_cmd(handle->hw_info, 0x94 + col);
+	else
+		handle->_write_cmd(handle->hw_info, 0xD4 + col);
+
 	mutex_unlock(handle->lock);
 
 	return STM_OK;

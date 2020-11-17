@@ -125,6 +125,16 @@ stm_err_t lcd_hd44780_write_char(lcd_hd44780_handle_t handle, uint8_t chr);
  *      - STM_FAIL: Fail.
  */
 stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str);
+
+/*
+ * @brief 	Move LCD's cursor to cordinate (x,y). 
+ * @param   col Column position.
+ * @param 	row Row position.
+ * @return
+ *      - STM_OK:   Success.
+ *      - STM_FAIL: Fail.
+ */
+stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t row);
  
 
 #ifdef __cplusplus
