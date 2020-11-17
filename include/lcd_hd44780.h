@@ -135,6 +135,26 @@ stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str);
  *      - STM_FAIL: Fail.
  */
 stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t row);
+
+/*
+ * @brief   Shift cursor forward.
+ * @param   handle Handle structure.
+ * @param   step Number of step.
+ * @return
+ *      - STM_OK:   Success.
+ *      - STM_FAIL: Fail.
+ */
+stm_err_t lcd_hd44780_shift_cursor_forward(lcd_hd44780_handle_t handle, uint8_t step);
+
+/*
+ * @brief   Shift cursor backward.
+ * @param   handle Handle structure.
+ * @param   step Number of step.
+ * @return
+ *      - STM_OK:   Success.
+ *      - STM_FAIL: Fail.
+ */
+stm_err_t lcd_hd44780_shift_cursor_backward(lcd_hd44780_handle_t handle, uint8_t step);
  
 
 #ifdef __cplusplus
