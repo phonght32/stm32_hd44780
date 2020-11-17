@@ -107,6 +107,16 @@ stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle);
 stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle);
 
 /*
+ * @brief   Display a character.
+ * @param   handle Handle structure.
+ * @param 	char Character.
+ * @return
+ *      - STM_OK:   Success.
+ *      - STM_FAIL: Fail.
+ */
+stm_err_t lcd_hd44780_write_char(lcd_hd44780_handle_t handle, uint8_t chr);
+
+/*
  * @brief   Display string.
  * @param   handle Handle structure.
  * @param 	str String display.

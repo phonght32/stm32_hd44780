@@ -390,6 +390,15 @@ stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle)
 	return STM_OK;
 }
 
+stm_err_t lcd_hd44780_write_char(lcd_hd44780_handle_t handle, uint8_t chr)
+{
+	mutex_lock(handle->lock);
+	handle->_write_data(handle->hw_info, chr);
+	mutex_unlock(handle->lock);
+
+	return STM_OK;
+}
+
 stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str)
 {
 	mutex_lock(handle->lock);
