@@ -15,6 +15,7 @@
 #define LCD_WRITE_CMD_ERR_STR			"lcd write command error"
 #define LCD_WRITE_STR_ERR_STR			"lcd write string error"
 #define LCD_WRITE_CHR_ERR_STR			"lcd write char error"
+#define LCD_WRITE_INT_ERR_STR			"lcd write integer error"
 #define LCD_CLEAR_ERR_STR				"lcd clear error"
 #define LCD_HOME_ERR_STR				"lcd home error"
 #define LCD_GOTOXY_ERR_STR				"lcd goto position (x,y) error"
@@ -419,8 +420,16 @@ stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle)
 	LCD_CHECK(handle, LCD_CLEAR_ERR_STR, return STM_ERR_INVALID_ARG);
 
 	mutex_lock(handle->lock);
-	handle->_write_cmd(handle->hw_info, 0x01);
+
+	int ret = handle->_write_cmd(handle->hw_info, 0x01);
+	if (ret) {
+		STM_LOGE(TAG, LCD_CLEAR_ERR_STR);
+		mutex_unlock(handle->lock);
+		return STM_FAIL;
+	}
+
 	handle->_wait(handle);
+
 	mutex_unlock(handle->lock);
 
 	return STM_OK;
@@ -432,8 +441,16 @@ stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle)
 	LCD_CHECK(handle, LCD_HOME_ERR_STR, return STM_ERR_INVALID_ARG);
 
 	mutex_lock(handle->lock);
-	handle->_write_cmd(handle->hw_info, 0x02);
+
+	int ret = handle->_write_cmd(handle->hw_info, 0x02);
+	if (ret) {
+		STM_LOGE(TAG, LCD_HOME_ERR_STR);
+		mutex_unlock(handle->lock);
+		return STM_FAIL;
+	}
+
 	handle->_wait(handle);
+
 	mutex_unlock(handle->lock);
 
 	return STM_OK;
@@ -445,7 +462,14 @@ stm_err_t lcd_hd44780_write_char(lcd_hd44780_handle_t handle, uint8_t chr)
 	LCD_CHECK(handle, LCD_WRITE_CHR_ERR_STR, return STM_ERR_INVALID_ARG);
 
 	mutex_lock(handle->lock);
-	handle->_write_data(handle->hw_info, chr);
+
+	int ret = handle->_write_data(handle->hw_info, chr);
+	if (ret) {
+		STM_LOGE(TAG, LCD_WRITE_CHR_ERR_STR);
+		mutex_unlock(handle->lock);
+		return STM_FAIL;
+	}
+
 	mutex_unlock(handle->lock);
 
 	return STM_OK;
@@ -458,8 +482,15 @@ stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str)
 	LCD_CHECK(str, LCD_WRITE_STR_ERR_STR, return STM_ERR_INVALID_ARG);
 
 	mutex_lock(handle->lock);
+	int ret;
+
 	while (*str) {
-		handle->_write_data(handle->hw_info, *str);
+		ret = handle->_write_data(handle->hw_info, *str);
+		if (ret) {
+			STM_LOGE(TAG, LCD_WRITE_STR_ERR_STR);
+			mutex_unlock(handle->lock);
+			return STM_FAIL;
+		}
 		str++;
 	}
 	mutex_unlock(handle->lock);
@@ -470,12 +501,19 @@ stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str)
 stm_err_t lcd_hd44780_write_int(lcd_hd44780_handle_t handle, int number)
 {
 	/* Check input condition */
-	LCD_CHECK(handle, LCD_WRITE_STR_ERR_STR, return STM_ERR_INVALID_ARG);
+	LCD_CHECK(handle, LCD_WRITE_INT_ERR_STR, return STM_ERR_INVALID_ARG);
 
 	mutex_lock(handle->lock);
 
+	int ret;
+
 	if (number < 0) {
-		handle->_write_data(handle->hw_info, '-');
+		ret = handle->_write_data(handle->hw_info, '-');
+		if (ret) {
+			STM_LOGE(TAG, LCD_WRITE_INT_ERR_STR);
+			mutex_unlock(handle->lock);
+			return STM_FAIL;
+		}
 		number *= -1;
 	}
 
@@ -491,7 +529,12 @@ stm_err_t lcd_hd44780_write_int(lcd_hd44780_handle_t handle, int number)
 	sprintf((char*)buf, "%d", number);
 
 	for (int i = 0; i < num_digit; i++) {
-		handle->_write_data(handle->hw_info, buf[i]);
+		ret = handle->_write_data(handle->hw_info, buf[i]);
+		if (ret) {
+			STM_LOGE(TAG, LCD_WRITE_INT_ERR_STR);
+			mutex_unlock(handle->lock);
+			return STM_FAIL;
+		}
 	}
 
 	mutex_unlock(handle->lock);
@@ -505,14 +548,40 @@ stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t r
 	LCD_CHECK(handle, LCD_GOTOXY_ERR_STR, return STM_ERR_INVALID_ARG);
 
 	mutex_lock(handle->lock);
-	if (row == 0)
-		handle->_write_cmd(handle->hw_info, 0x80 + col);
-	else if (row == 1)
-		handle->_write_cmd(handle->hw_info, 0xC0 + col);
-	else if (row == 2)
-		handle->_write_cmd(handle->hw_info, 0x94 + col);
-	else
-		handle->_write_cmd(handle->hw_info, 0xD4 + col);
+
+	int ret;
+	if (row == 0) {
+		ret = handle->_write_cmd(handle->hw_info, 0x80 + col);
+		if (ret) {
+			STM_LOGE(TAG, LCD_GOTOXY_ERR_STR);
+			mutex_unlock(handle->lock);
+			return STM_FAIL;
+		}
+	}
+	else if (row == 1) {
+		ret = handle->_write_cmd(handle->hw_info, 0xC0 + col);
+		if (ret) {
+			STM_LOGE(TAG, LCD_GOTOXY_ERR_STR);
+			mutex_unlock(handle->lock);
+			return STM_FAIL;
+		}
+	}
+	else if (row == 2) {
+		ret = handle->_write_cmd(handle->hw_info, 0x94 + col);
+		if (ret) {
+			STM_LOGE(TAG, LCD_GOTOXY_ERR_STR);
+			mutex_unlock(handle->lock);
+			return STM_FAIL;
+		}
+	}
+	else {
+		ret = handle->_write_cmd(handle->hw_info, 0xD4 + col);
+		if (ret) {
+			STM_LOGE(TAG, LCD_GOTOXY_ERR_STR);
+			mutex_unlock(handle->lock);
+			return STM_FAIL;
+		}
+	}
 	mutex_unlock(handle->lock);
 
 	return STM_OK;
@@ -524,8 +593,15 @@ stm_err_t lcd_hd44780_shift_cursor_forward(lcd_hd44780_handle_t handle, uint8_t 
 	LCD_CHECK(handle, LCD_SHIFT_CURSOR_ERR_STR, return STM_ERR_INVALID_ARG);
 
 	mutex_lock(handle->lock);
+	int ret;
+
 	for (uint8_t i = 0; i < step; i++) {
-		handle->_write_cmd(handle->hw_info, 0x14);
+		ret = handle->_write_cmd(handle->hw_info, 0x14);
+		if (ret) {
+			STM_LOGE(TAG, LCD_SHIFT_CURSOR_ERR_STR);
+			mutex_unlock(handle->lock);
+			return STM_FAIL;
+		}
 	}
 	mutex_unlock(handle->lock);
 
@@ -538,8 +614,15 @@ stm_err_t lcd_hd44780_shift_cursor_backward(lcd_hd44780_handle_t handle, uint8_t
 	LCD_CHECK(handle, LCD_SHIFT_CURSOR_ERR_STR, return STM_ERR_INVALID_ARG);
 
 	mutex_lock(handle->lock);
+	int ret;
+
 	for (uint8_t i = 0; i < step; i++) {
-		handle->_write_cmd(handle->hw_info, 0x10);
+		ret = handle->_write_cmd(handle->hw_info, 0x10);
+		if (ret) {
+			STM_LOGE(TAG, LCD_SHIFT_CURSOR_ERR_STR);
+			mutex_unlock(handle->lock);
+			return STM_FAIL;
+		}
 	}
 	mutex_unlock(handle->lock);
 
