@@ -5,7 +5,8 @@
 
 #include "stm_log.h"
 #include "include/lcd_hd44780.h"
-
+#include <stdarg.h>
+#include <stdlib.h>
 #define LCD_TICK_DELAY_DEFAULT		50
 
 #define LCD_INIT_ERR_STR				"lcd init error"
@@ -417,9 +418,6 @@ stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t r
 {
 	mutex_lock(handle->lock);
 
-	/* Set hw_info RS to high to write to command register */
-	LCD_CHECK(!gpio_set_level(handle->hw_info.gpio_port_rs, handle->hw_info.gpio_num_rs, false), LCD_GOTOXY_ERR_STR, return STM_FAIL);
-
 	if (row == 0)
 		handle->_write_cmd(handle->hw_info, 0x80 + col);
 	else if (row == 1)
@@ -438,11 +436,8 @@ stm_err_t lcd_hd44780_shift_cursor_forward(lcd_hd44780_handle_t handle, uint8_t 
 {
 	mutex_lock(handle->lock);
 
-	/* Set hw_info RS to high to write to command register */
-	LCD_CHECK(!gpio_set_level(handle->hw_info.gpio_port_rs, handle->hw_info.gpio_num_rs, false), LCD_SHIFT_CURSOR_ERR_STR, return STM_FAIL);
-
 	/* Shift cursor */
-	for (uint8_t i=0; i<step; i++) {
+	for (uint8_t i = 0; i < step; i++) {
 		handle->_write_cmd(handle->hw_info, 0x14);
 	}
 
@@ -454,11 +449,8 @@ stm_err_t lcd_hd44780_shift_cursor_backward(lcd_hd44780_handle_t handle, uint8_t
 {
 	mutex_lock(handle->lock);
 
-	/* Set hw_info RS to high to write to command register */
-	LCD_CHECK(!gpio_set_level(handle->hw_info.gpio_port_rs, handle->hw_info.gpio_num_rs, false), LCD_SHIFT_CURSOR_ERR_STR, return STM_FAIL);
-
 	/* Shift cursor */
-	for (uint8_t i=0; i<step; i++) {
+	for (uint8_t i = 0; i < step; i++) {
 		handle->_write_cmd(handle->hw_info, 0x10);
 	}
 
