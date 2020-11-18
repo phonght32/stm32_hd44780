@@ -490,7 +490,7 @@ stm_err_t lcd_hd44780_shift_cursor_forward(lcd_hd44780_handle_t handle, uint8_t 
 {
 	/* Check input condition */
 	LCD_CHECK(handle, LCD_SHIFT_CURSOR_ERR_STR, return STM_ERR_INVALID_ARG);
-	
+
 	mutex_lock(handle->lock);
 	for (uint8_t i = 0; i < step; i++) {
 		handle->_write_cmd(handle->hw_info, 0x14);
@@ -512,4 +512,9 @@ stm_err_t lcd_hd44780_shift_cursor_backward(lcd_hd44780_handle_t handle, uint8_t
 	mutex_unlock(handle->lock);
 
 	return STM_OK;
+}
+
+void lcd_hd44780_destroy(lcd_hd44780_handle_t handle)
+{
+	free(handle);
 }

@@ -157,6 +157,13 @@ stm_err_t lcd_hd44780_shift_cursor_forward(lcd_hd44780_handle_t handle, uint8_t 
  *      - Others: 	Fail.
  */
 stm_err_t lcd_hd44780_shift_cursor_backward(lcd_hd44780_handle_t handle, uint8_t step);
+
+/*
+ * @brief   Destroy LCD handle structure.
+ * @param   handle Handle structure.
+ * @return	None.
+ */
+void lcd_hd44780_destroy(lcd_hd44780_handle_t handle);
  
 
 #ifdef __cplusplus
