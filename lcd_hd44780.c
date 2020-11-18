@@ -11,7 +11,10 @@
 
 #define LCD_INIT_ERR_STR				"lcd init error"
 #define LCD_READ_ERR_STR				"lcd read error"
+#define LCD_HOME_ERR_STR				"lcd home error"
 #define LCD_WRITE_CMD_ERR_STR			"lcd write command error"
+#define LCD_WRITE_STR_ERR_STR			"lcd write string error"
+#define LCD_WRITE_CHR_ERR_STR			"lcd write char error"
 #define LCD_CLEAR_ERR_STR				"lcd clear error"
 #define LCD_HOME_ERR_STR				"lcd home error"
 #define LCD_GOTOXY_ERR_STR				"lcd goto position (x,y) error"
@@ -338,6 +341,35 @@ void _lcd_hd44780_cleanup(lcd_hd44780_handle_t handle)
 
 lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config)
 {
+	/* Check input condition */
+	LCD_CHECK(config, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->size < LCD_HD44780_SIZE_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->mode < LCD_HD44780_COMM_MODE_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_port_rs < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_num_rs < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_port_rw < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_num_rw < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_port_en < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_num_en < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_port_d0 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_num_d0 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_port_d1 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_num_d1 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_port_d2 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_num_d2 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_port_d3 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_num_d3 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_port_d4 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_num_d4 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_port_d5 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_num_d5 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_port_d6 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_num_d6 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_port_d7 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.gpio_num_d7 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.i2c_num < I2C_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK((config->hw_info.i2c_pins_pack < I2C_PINS_PACK_MAX), LCD_INIT_ERR_STR, return NULL);
+
 	/* Allocate memory for handle structure */
 	lcd_hd44780_handle_t handle = calloc(1, sizeof(lcd_hd44780_t));
 	LCD_CHECK(handle, LCD_INIT_ERR_STR, return NULL);
@@ -383,6 +415,9 @@ lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config)
 
 stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle)
 {
+	/* Check input condition */
+	LCD_CHECK(handle, LCD_CLEAR_ERR_STR, return STM_ERR_INVALID_ARG);
+
 	mutex_lock(handle->lock);
 	handle->_write_cmd(handle->hw_info, 0x01);
 	handle->_wait(handle);
@@ -393,6 +428,9 @@ stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle)
 
 stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle)
 {
+	/* Check input condition */
+	LCD_CHECK(handle, LCD_HOME_ERR_STR, return STM_ERR_INVALID_ARG);
+
 	mutex_lock(handle->lock);
 	handle->_write_cmd(handle->hw_info, 0x02);
 	handle->_wait(handle);
@@ -403,6 +441,9 @@ stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle)
 
 stm_err_t lcd_hd44780_write_char(lcd_hd44780_handle_t handle, uint8_t chr)
 {
+	/* Check input condition */
+	LCD_CHECK(handle, LCD_WRITE_CHR_ERR_STR, return STM_ERR_INVALID_ARG);
+
 	mutex_lock(handle->lock);
 	handle->_write_data(handle->hw_info, chr);
 	mutex_unlock(handle->lock);
@@ -412,6 +453,10 @@ stm_err_t lcd_hd44780_write_char(lcd_hd44780_handle_t handle, uint8_t chr)
 
 stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str)
 {
+	/* Check input condition */
+	LCD_CHECK(handle, LCD_WRITE_STR_ERR_STR, return STM_ERR_INVALID_ARG);
+	LCD_CHECK(str, LCD_WRITE_STR_ERR_STR, return STM_ERR_INVALID_ARG);
+
 	mutex_lock(handle->lock);
 	while (*str) {
 		handle->_write_data(handle->hw_info, *str);
@@ -424,8 +469,10 @@ stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str)
 
 stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t row)
 {
-	mutex_lock(handle->lock);
+	/* Check input condition */
+	LCD_CHECK(handle, LCD_GOTOXY_ERR_STR, return STM_ERR_INVALID_ARG);
 
+	mutex_lock(handle->lock);
 	if (row == 0)
 		handle->_write_cmd(handle->hw_info, 0x80 + col);
 	else if (row == 1)
@@ -434,7 +481,6 @@ stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t r
 		handle->_write_cmd(handle->hw_info, 0x94 + col);
 	else
 		handle->_write_cmd(handle->hw_info, 0xD4 + col);
-
 	mutex_unlock(handle->lock);
 
 	return STM_OK;
@@ -442,26 +488,28 @@ stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t r
 
 stm_err_t lcd_hd44780_shift_cursor_forward(lcd_hd44780_handle_t handle, uint8_t step)
 {
+	/* Check input condition */
+	LCD_CHECK(handle, LCD_SHIFT_CURSOR_ERR_STR, return STM_ERR_INVALID_ARG);
+	
 	mutex_lock(handle->lock);
-
-	/* Shift cursor */
 	for (uint8_t i = 0; i < step; i++) {
 		handle->_write_cmd(handle->hw_info, 0x14);
 	}
-
 	mutex_unlock(handle->lock);
+
 	return STM_OK;
 }
 
 stm_err_t lcd_hd44780_shift_cursor_backward(lcd_hd44780_handle_t handle, uint8_t step)
 {
-	mutex_lock(handle->lock);
+	/* Check input condition */
+	LCD_CHECK(handle, LCD_SHIFT_CURSOR_ERR_STR, return STM_ERR_INVALID_ARG);
 
-	/* Shift cursor */
+	mutex_lock(handle->lock);
 	for (uint8_t i = 0; i < step; i++) {
 		handle->_write_cmd(handle->hw_info, 0x10);
 	}
-
 	mutex_unlock(handle->lock);
+
 	return STM_OK;
 }

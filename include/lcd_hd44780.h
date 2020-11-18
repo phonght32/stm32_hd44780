@@ -95,7 +95,7 @@ lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config);
  * @param   handle Handle structure.
  * @return
  *      - STM_OK:   Success.
- *      - STM_FAIL: Fail.
+ *      - Others: 	Fail.
  */
 stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle);
 
@@ -104,7 +104,7 @@ stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle);
  * @param   handle Handle structure.
  * @return
  *      - STM_OK:   Success.
- *      - STM_FAIL: Fail.
+ *      - Others: 	Fail.
  */
 stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle);
 
@@ -114,7 +114,7 @@ stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle);
  * @param 	char Character.
  * @return
  *      - STM_OK:   Success.
- *      - STM_FAIL: Fail.
+ *      - Others:	Fail.
  */
 stm_err_t lcd_hd44780_write_char(lcd_hd44780_handle_t handle, uint8_t chr);
 
@@ -124,7 +124,7 @@ stm_err_t lcd_hd44780_write_char(lcd_hd44780_handle_t handle, uint8_t chr);
  * @param 	str String display.
  * @return
  *      - STM_OK:   Success.
- *      - STM_FAIL: Fail.
+ *      - Others: 	Fail.
  */
 stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str);
 
@@ -134,7 +134,7 @@ stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str);
  * @param 	row Row position.
  * @return
  *      - STM_OK:   Success.
- *      - STM_FAIL: Fail.
+ *      - Others: 	Fail.
  */
 stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t row);
 
@@ -144,7 +144,7 @@ stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t r
  * @param   step Number of step.
  * @return
  *      - STM_OK:   Success.
- *      - STM_FAIL: Fail.
+ *      - Others: 	Fail.
  */
 stm_err_t lcd_hd44780_shift_cursor_forward(lcd_hd44780_handle_t handle, uint8_t step);
 
@@ -154,7 +154,7 @@ stm_err_t lcd_hd44780_shift_cursor_forward(lcd_hd44780_handle_t handle, uint8_t 
  * @param   step Number of step.
  * @return
  *      - STM_OK:   Success.
- *      - STM_FAIL: Fail.
+ *      - Others: 	Fail.
  */
 stm_err_t lcd_hd44780_shift_cursor_backward(lcd_hd44780_handle_t handle, uint8_t step);
  
