@@ -27,7 +27,7 @@
 
 static const char *TAG = "LCD_DRIVER";
 
-#define LCD_CHECK(a, str, action) if(!a) {									\
+#define LCD_CHECK(a, str, action) if(!(a)) {									\
 	STM_LOGE(TAG, "%s:%d (%s):%s", __FILE__, __LINE__, __FUNCTION__, str);	\
 	action;																	\
 }
@@ -343,32 +343,32 @@ lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config)
 {
 	/* Check input condition */
 	LCD_CHECK(config, LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->size < LCD_HD44780_SIZE_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->mode < LCD_HD44780_COMM_MODE_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_port_rs < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_num_rs < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_port_rw < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_num_rw < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_port_en < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_num_en < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_port_d0 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_num_d0 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_port_d1 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_num_d1 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_port_d2 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_num_d2 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_port_d3 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_num_d3 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_port_d4 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_num_d4 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_port_d5 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_num_d5 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_port_d6 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_num_d6 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_port_d7 < GPIO_PORT_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.gpio_num_d7 < GPIO_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.i2c_num < I2C_NUM_MAX), LCD_INIT_ERR_STR, return NULL);
-	LCD_CHECK((config->hw_info.i2c_pins_pack < I2C_PINS_PACK_MAX), LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->size < LCD_HD44780_SIZE_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->mode < LCD_HD44780_COMM_MODE_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_port_rs < GPIO_PORT_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_num_rs < GPIO_NUM_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_port_rw < GPIO_PORT_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_num_rw < GPIO_NUM_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_port_en < GPIO_PORT_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_num_en < GPIO_NUM_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_port_d0 < GPIO_PORT_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_num_d0 < GPIO_NUM_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_port_d1 < GPIO_PORT_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_num_d1 < GPIO_NUM_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_port_d2 < GPIO_PORT_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_num_d2 < GPIO_NUM_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_port_d3 < GPIO_PORT_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_num_d3 < GPIO_NUM_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_port_d4 < GPIO_PORT_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_num_d4 < GPIO_NUM_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_port_d5 < GPIO_PORT_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_num_d5 < GPIO_NUM_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_port_d6 < GPIO_PORT_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_num_d6 < GPIO_NUM_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_port_d7 < GPIO_PORT_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.gpio_num_d7 < GPIO_NUM_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.i2c_num < I2C_NUM_MAX, LCD_INIT_ERR_STR, return NULL);
+	LCD_CHECK(config->hw_info.i2c_pins_pack < I2C_PINS_PACK_MAX, LCD_INIT_ERR_STR, return NULL);
 
 	/* Allocate memory for handle structure */
 	lcd_hd44780_handle_t handle = calloc(1, sizeof(lcd_hd44780_t));
