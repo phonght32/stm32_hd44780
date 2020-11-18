@@ -467,6 +467,38 @@ stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str)
 	return STM_OK;
 }
 
+stm_err_t lcd_hd44780_write_int(lcd_hd44780_handle_t handle, int number)
+{
+	/* Check input condition */
+	LCD_CHECK(handle, LCD_WRITE_STR_ERR_STR, return STM_ERR_INVALID_ARG);
+
+	mutex_lock(handle->lock);
+
+	if (number < 0) {
+		handle->_write_data(handle->hw_info, '-');
+		number *= -1;
+	}
+
+	int num_digit = 1;
+	int temp = number;
+
+	while (temp > 9) {
+		num_digit++;
+		temp /= 10;
+	}
+
+	uint8_t buf[num_digit];
+	sprintf((char*)buf, "%d", number);
+
+	for (int i = 0; i < num_digit; i++) {
+		handle->_write_data(handle->hw_info, buf[i]);
+	}
+
+	mutex_unlock(handle->lock);
+
+	return STM_OK;
+}
+
 stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t row)
 {
 	/* Check input condition */

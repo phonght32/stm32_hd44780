@@ -129,6 +129,16 @@ stm_err_t lcd_hd44780_write_char(lcd_hd44780_handle_t handle, uint8_t chr);
 stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str);
 
 /*
+ * @brief   Display integer.
+ * @param   handle Handle structure.
+ * @param 	number Number as integer format.
+ * @return
+ *      - STM_OK:   Success.
+ *      - Others: 	Fail.
+ */
+stm_err_t lcd_hd44780_write_int(lcd_hd44780_handle_t handle, int number);
+
+/*
  * @brief 	Move LCD's cursor to cordinate (x,y). 
  * @param   col Column position.
  * @param 	row Row position.
