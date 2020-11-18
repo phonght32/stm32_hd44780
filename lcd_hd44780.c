@@ -185,7 +185,7 @@ stm_err_t _read_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t *buf)
 {
 	gpio_cfg_t gpio_cfg;
 	bool bit_data;
-	uint8_t nibble_h, nibble_l;
+	uint8_t nibble_h = 0, nibble_l = 0;
 
 	/* Set GPIOs as input mode */
 	gpio_cfg.mode = GPIO_INPUT;
@@ -298,6 +298,8 @@ static init_func _get_init_func(lcd_hd44780_comm_mode_t mode)
 	if (mode == LCD_HD44780_COMM_MODE_4BIT) {
 		return _init_mode_4bit;
 	}
+
+	return NULL;
 }
 
 static write_func _get_write_cmd_func(lcd_hd44780_comm_mode_t mode)
@@ -305,6 +307,8 @@ static write_func _get_write_cmd_func(lcd_hd44780_comm_mode_t mode)
 	if (mode == LCD_HD44780_COMM_MODE_4BIT) {
 		return _write_cmd_4bit;
 	}
+
+	return NULL;
 }
 
 static write_func _get_write_data_func(lcd_hd44780_comm_mode_t mode)
@@ -312,6 +316,8 @@ static write_func _get_write_data_func(lcd_hd44780_comm_mode_t mode)
 	if (mode == LCD_HD44780_COMM_MODE_4BIT) {
 		return _write_data_4bit;
 	}
+
+	return NULL;
 }
 
 static wait_func _get_wait_func(lcd_hd44780_hardware_info_t hw_info)
@@ -321,6 +327,8 @@ static wait_func _get_wait_func(lcd_hd44780_hardware_info_t hw_info)
 	} else {
 		return _wait_with_pinrw;
 	}
+
+	return NULL;
 }
 
 void _lcd_hd44780_cleanup(lcd_hd44780_handle_t handle)
