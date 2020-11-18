@@ -38,12 +38,14 @@ typedef enum {
 	LCD_HD44780_SIZE_16_2 = 0,						/*!< LCD size 16x2 */
 	LCD_HD44780_SIZE_16_4,							/*!< LCD size 16x4 */
 	LCD_HD44780_SIZE_20_4,							/*!< LCD size 20x4 */
+	LCD_HD44780_SIZE_MAX,
 } lcd_hd44780_size_t;
 
 typedef enum {
 	LCD_HD44780_COMM_MODE_4BIT = 0,					/*!< Communicate with LCD over 4bit data mode */
 	LCD_HD44780_COMM_MODE_8BIT,						/*!< Communicate with LCD over 8bit data mode */
 	LCD_HD44780_COMM_MODE_SERIAL,					/*!< Communicate with LCD over serial data mode */
+	LCD_HD44780_COMM_MODE_MAX,
 } lcd_hd44780_comm_mode_t;
 
 typedef struct {
