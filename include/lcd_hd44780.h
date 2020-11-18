@@ -107,6 +107,16 @@ stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle);
 stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle);
 
 /*
+ * @brief   Display a character.
+ * @param   handle Handle structure.
+ * @param 	char Character.
+ * @return
+ *      - STM_OK:   Success.
+ *      - STM_FAIL: Fail.
+ */
+stm_err_t lcd_hd44780_write_char(lcd_hd44780_handle_t handle, uint8_t chr);
+
+/*
  * @brief   Display string.
  * @param   handle Handle structure.
  * @param 	str String display.
@@ -115,6 +125,36 @@ stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle);
  *      - STM_FAIL: Fail.
  */
 stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str);
+
+/*
+ * @brief 	Move LCD's cursor to cordinate (x,y). 
+ * @param   col Column position.
+ * @param 	row Row position.
+ * @return
+ *      - STM_OK:   Success.
+ *      - STM_FAIL: Fail.
+ */
+stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t row);
+
+/*
+ * @brief   Shift cursor forward.
+ * @param   handle Handle structure.
+ * @param   step Number of step.
+ * @return
+ *      - STM_OK:   Success.
+ *      - STM_FAIL: Fail.
+ */
+stm_err_t lcd_hd44780_shift_cursor_forward(lcd_hd44780_handle_t handle, uint8_t step);
+
+/*
+ * @brief   Shift cursor backward.
+ * @param   handle Handle structure.
+ * @param   step Number of step.
+ * @return
+ *      - STM_OK:   Success.
+ *      - STM_FAIL: Fail.
+ */
+stm_err_t lcd_hd44780_shift_cursor_backward(lcd_hd44780_handle_t handle, uint8_t step);
  
 
 #ifdef __cplusplus

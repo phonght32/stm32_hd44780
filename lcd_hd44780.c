@@ -5,14 +5,17 @@
 
 #include "stm_log.h"
 #include "include/lcd_hd44780.h"
-
+#include <stdarg.h>
+#include <stdlib.h>
 #define LCD_TICK_DELAY_DEFAULT		50
 
-#define LCD_INIT_ERR_STR		"lcd init error"
-#define LCD_READ_ERR_STR		"lcd read error"
-#define LCD_WRITE_CMD_ERR_STR	"lcd write command error"
-#define LCD_CLEAR_ERR_STR		"lcd clear error"
-#define LCD_HOME_ERR_STR		"lcd home error"
+#define LCD_INIT_ERR_STR				"lcd init error"
+#define LCD_READ_ERR_STR				"lcd read error"
+#define LCD_WRITE_CMD_ERR_STR			"lcd write command error"
+#define LCD_CLEAR_ERR_STR				"lcd clear error"
+#define LCD_HOME_ERR_STR				"lcd home error"
+#define LCD_GOTOXY_ERR_STR				"lcd goto position (x,y) error"
+#define LCD_SHIFT_CURSOR_ERR_STR		"lcd shift cursor error"
 
 #define mutex_lock(x)			while (xSemaphoreTake(x, portMAX_DELAY) != pdPASS)
 #define mutex_unlock(x) 		xSemaphoreGive(x)
@@ -279,13 +282,13 @@ static void _wait_with_pinrw(lcd_hd44780_handle_t handle)
 	if (handle->mode == LCD_HD44780_COMM_MODE_4BIT) {
 		_read = _read_4bit;
 	}
-	
+
 	while (1) {
 		gpio_set_level(handle->hw_info.gpio_port_rs, handle->hw_info.gpio_num_rs, false);
 		gpio_set_level(handle->hw_info.gpio_port_rw, handle->hw_info.gpio_num_rw, true);
 
 		_read(handle->hw_info, &temp_val);
-		if ((temp_val & 0x80) == 0) 
+		if ((temp_val & 0x80) == 0)
 			break;
 	}
 }
@@ -390,6 +393,15 @@ stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle)
 	return STM_OK;
 }
 
+stm_err_t lcd_hd44780_write_char(lcd_hd44780_handle_t handle, uint8_t chr)
+{
+	mutex_lock(handle->lock);
+	handle->_write_data(handle->hw_info, chr);
+	mutex_unlock(handle->lock);
+
+	return STM_OK;
+}
+
 stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str)
 {
 	mutex_lock(handle->lock);
@@ -399,5 +411,49 @@ stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str)
 	}
 	mutex_unlock(handle->lock);
 
+	return STM_OK;
+}
+
+stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t row)
+{
+	mutex_lock(handle->lock);
+
+	if (row == 0)
+		handle->_write_cmd(handle->hw_info, 0x80 + col);
+	else if (row == 1)
+		handle->_write_cmd(handle->hw_info, 0xC0 + col);
+	else if (row == 2)
+		handle->_write_cmd(handle->hw_info, 0x94 + col);
+	else
+		handle->_write_cmd(handle->hw_info, 0xD4 + col);
+
+	mutex_unlock(handle->lock);
+
+	return STM_OK;
+}
+
+stm_err_t lcd_hd44780_shift_cursor_forward(lcd_hd44780_handle_t handle, uint8_t step)
+{
+	mutex_lock(handle->lock);
+
+	/* Shift cursor */
+	for (uint8_t i = 0; i < step; i++) {
+		handle->_write_cmd(handle->hw_info, 0x14);
+	}
+
+	mutex_unlock(handle->lock);
+	return STM_OK;
+}
+
+stm_err_t lcd_hd44780_shift_cursor_backward(lcd_hd44780_handle_t handle, uint8_t step)
+{
+	mutex_lock(handle->lock);
+
+	/* Shift cursor */
+	for (uint8_t i = 0; i < step; i++) {
+		handle->_write_cmd(handle->hw_info, 0x10);
+	}
+
+	mutex_unlock(handle->lock);
 	return STM_OK;
 }
