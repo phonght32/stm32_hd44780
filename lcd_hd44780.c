@@ -165,7 +165,7 @@ stm_err_t _write_cmd_serial(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd)
 	buf_send[2] = ((cmd << 4) & 0xF0) | 0x04;
 	buf_send[3] = ((cmd << 4) & 0xF0) | 0x08;
 
-	LCD_CHECK(!i2c_write_bytes(hw_info.i2c_num, LCD_I2C_ADDR, buf_send, 4, LCD_TICK_DELAY_DEFAULT), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!i2c_write_bytes(hw_info.i2c_num, LCD_I2C_ADDR, buf_send, 4, LCD_TICK_DELAY_DEFAULT), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
 
 	return STM_OK;
 }
