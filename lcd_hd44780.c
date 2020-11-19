@@ -7,7 +7,7 @@
 #include "include/lcd_hd44780.h"
 
 #define LCD_TICK_DELAY_DEFAULT		100
-#define LCD_I2C_ADDR				0x27
+#define LCD_I2C_ADDR				(0x27<<1)
 
 #define LCD_INIT_ERR_STR				"lcd init error"
 #define LCD_READ_ERR_STR				"lcd read error"
