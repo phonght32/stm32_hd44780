@@ -5,8 +5,7 @@
 
 #include "stm_log.h"
 #include "include/lcd_hd44780.h"
-#include <stdarg.h>
-#include <stdlib.h>
+
 #define LCD_TICK_DELAY_DEFAULT		50
 
 #define LCD_INIT_ERR_STR				"lcd init error"
