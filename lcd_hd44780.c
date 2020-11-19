@@ -29,7 +29,7 @@
 
 static const char *TAG = "LCD_DRIVER";
 
-#define LCD_CHECK(a, str, action) if(!(a)) {									\
+#define LCD_CHECK(a, str, action) if(!(a)) {								\
 	STM_LOGE(TAG, "%s:%d (%s):%s", __FILE__, __LINE__, __FUNCTION__, str);	\
 	action;																	\
 }
@@ -96,6 +96,16 @@ stm_err_t _init_mode_4bit(lcd_hd44780_hardware_info_t hw_info)
 	return STM_OK;
 }
 
+stm_err_t _init_mode_8bit(lcd_hd44780_hardware_info_t hw_info) 
+{
+	return STM_OK;
+}
+
+stm_err_t _init_mode_serial(lcd_hd44780_hardware_info_t hw_info) 
+{
+	return STM_OK;
+}
+
 stm_err_t _write_cmd_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd)
 {
 	bool bit_data;
@@ -141,6 +151,16 @@ stm_err_t _write_cmd_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd)
 	return STM_OK;
 }
 
+stm_err_t _write_cmd_8bit(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd) 
+{
+	return STM_OK;
+}
+
+stm_err_t _write_cmd_serial(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd) 
+{
+	return STM_OK;
+}
+
 stm_err_t _write_data_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t data)
 {
 	bool bit_data;
@@ -183,6 +203,16 @@ stm_err_t _write_data_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t data)
 	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_en, hw_info.gpio_num_en, false), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
 	vTaskDelay(1 / portTICK_PERIOD_MS);
 
+	return STM_OK;
+}
+
+stm_err_t _write_data_8bit(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd) 
+{
+	return STM_OK;
+}
+
+stm_err_t _write_data_serial(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd) 
+{
 	return STM_OK;
 }
 
@@ -274,6 +304,11 @@ stm_err_t _read_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t *buf)
 	return STM_OK;
 }
 
+stm_err_t _read_8bit(lcd_hd44780_hardware_info_t hw_info, uint8_t *buf)
+{
+	return STM_OK;
+}
+
 static void _wait_with_delay(lcd_hd44780_handle_t handle)
 {
 	vTaskDelay(2 / portTICK_PERIOD_MS);
@@ -286,6 +321,10 @@ static void _wait_with_pinrw(lcd_hd44780_handle_t handle)
 
 	if (handle->mode == LCD_HD44780_COMM_MODE_4BIT) {
 		_read = _read_4bit;
+	} else if (handle->mode == LCD_HD44780_COMM_MODE_8BIT) {
+		_read = _read_8bit;
+	} else {
+		_read = NULL;
 	}
 
 	while (1) {
@@ -302,6 +341,10 @@ static init_func _get_init_func(lcd_hd44780_comm_mode_t mode)
 {
 	if (mode == LCD_HD44780_COMM_MODE_4BIT) {
 		return _init_mode_4bit;
+	} else if (mode == LCD_HD44780_COMM_MODE_8BIT) {
+		return _init_mode_8bit;
+	} else {
+		return _init_mode_serial;
 	}
 
 	return NULL;
@@ -311,6 +354,10 @@ static write_func _get_write_cmd_func(lcd_hd44780_comm_mode_t mode)
 {
 	if (mode == LCD_HD44780_COMM_MODE_4BIT) {
 		return _write_cmd_4bit;
+	} else if (mode == LCD_HD44780_COMM_MODE_8BIT) {
+		return _write_cmd_8bit;
+	} else {
+		return _write_cmd_serial;
 	}
 
 	return NULL;
@@ -320,6 +367,10 @@ static write_func _get_write_data_func(lcd_hd44780_comm_mode_t mode)
 {
 	if (mode == LCD_HD44780_COMM_MODE_4BIT) {
 		return _write_data_4bit;
+	} else if (mode == LCD_HD44780_COMM_MODE_8BIT) {
+		return _write_data_8bit;
+	} else {
+		return _write_data_serial;
 	}
 
 	return NULL;
