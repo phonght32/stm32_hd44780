@@ -83,6 +83,9 @@ typedef struct {
 
 /*
  * @brief   Initialize Liquid-Crystal Display (LCD).
+ * @note:   This function only get I2C_NUM to handler communication, not
+ *          configure I2C 's parameters. You have to self configure I2C before
+ *          pass I2C into this function.
  * @param   config Struct pointer.
  * @return
  *      - LCD handle structure: Success.
