@@ -7,11 +7,13 @@
 #include "include/lcd_hd44780.h"
 
 #define LCD_TICK_DELAY_DEFAULT		50
+#define LCD_I2C_ADDR				0x27
 
 #define LCD_INIT_ERR_STR				"lcd init error"
 #define LCD_READ_ERR_STR				"lcd read error"
 #define LCD_HOME_ERR_STR				"lcd home error"
 #define LCD_WRITE_CMD_ERR_STR			"lcd write command error"
+#define LCD_WRITE_DATA_ERR_STR			"lcd write data error"
 #define LCD_WRITE_STR_ERR_STR			"lcd write string error"
 #define LCD_WRITE_CHR_ERR_STR			"lcd write char error"
 #define LCD_WRITE_INT_ERR_STR			"lcd write integer error"
@@ -95,12 +97,12 @@ stm_err_t _init_mode_4bit(lcd_hd44780_hardware_info_t hw_info)
 	return STM_OK;
 }
 
-stm_err_t _init_mode_8bit(lcd_hd44780_hardware_info_t hw_info) 
+stm_err_t _init_mode_8bit(lcd_hd44780_hardware_info_t hw_info)
 {
 	return STM_OK;
 }
 
-stm_err_t _init_mode_serial(lcd_hd44780_hardware_info_t hw_info) 
+stm_err_t _init_mode_serial(lcd_hd44780_hardware_info_t hw_info)
 {
 	return STM_OK;
 }
@@ -150,13 +152,21 @@ stm_err_t _write_cmd_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd)
 	return STM_OK;
 }
 
-stm_err_t _write_cmd_8bit(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd) 
+stm_err_t _write_cmd_8bit(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd)
 {
 	return STM_OK;
 }
 
-stm_err_t _write_cmd_serial(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd) 
+stm_err_t _write_cmd_serial(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd)
 {
+	uint8_t buf_send[4];
+	buf_send[0] = (cmd & 0xF0) | 0x04;
+	buf_send[1] = (cmd & 0xF0);
+	buf_send[2] = ((cmd << 4) & 0xF0) | 0x04;
+	buf_send[3] = ((cmd << 4) & 0xF0) | 0x08;
+
+	LCD_CHECK(!i2c_write_bytes(hw_info.i2c_num, LCD_I2C_ADDR, buf_send, 4, 100), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
+
 	return STM_OK;
 }
 
@@ -167,51 +177,59 @@ stm_err_t _write_data_4bit(lcd_hd44780_hardware_info_t hw_info, uint8_t data)
 	uint8_t nibble_l = data & 0x0F;
 
 	/* Set hw_info RS to high to write to data register */
-	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_rs, hw_info.gpio_num_rs, true), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_rs, hw_info.gpio_num_rs, true), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 
 	if ((hw_info.gpio_port_rw != -1) && (hw_info.gpio_num_rw != -1)) {
-		LCD_CHECK(!gpio_set_level(hw_info.gpio_port_rw, hw_info.gpio_num_rw, false), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+		LCD_CHECK(!gpio_set_level(hw_info.gpio_port_rw, hw_info.gpio_num_rw, false), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 	}
 
 	/* Write high nibble */
 	bit_data = (nibble_h >> 0) & 0x01;
-	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d4, hw_info.gpio_num_d4, bit_data), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d4, hw_info.gpio_num_d4, bit_data), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 	bit_data = (nibble_h >> 1) & 0x01;
-	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d5, hw_info.gpio_num_d5, bit_data), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d5, hw_info.gpio_num_d5, bit_data), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 	bit_data = (nibble_h >> 2) & 0x01;
-	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d6, hw_info.gpio_num_d6, bit_data), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d6, hw_info.gpio_num_d6, bit_data), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 	bit_data = (nibble_h >> 3) & 0x01;
-	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d7, hw_info.gpio_num_d7, bit_data), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d7, hw_info.gpio_num_d7, bit_data), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 
-	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_en, hw_info.gpio_num_en, true), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_en, hw_info.gpio_num_en, true), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 	vTaskDelay(1 / portTICK_PERIOD_MS);
-	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_en, hw_info.gpio_num_en, false), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_en, hw_info.gpio_num_en, false), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 	vTaskDelay(1 / portTICK_PERIOD_MS);
 
 	bit_data = (nibble_l >> 0) & 0x01;
-	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d4, hw_info.gpio_num_d4, bit_data), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d4, hw_info.gpio_num_d4, bit_data), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 	bit_data = (nibble_l >> 1) & 0x01;
-	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d5, hw_info.gpio_num_d5, bit_data), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d5, hw_info.gpio_num_d5, bit_data), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 	bit_data = (nibble_l >> 2) & 0x01;
-	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d6, hw_info.gpio_num_d6, bit_data), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d6, hw_info.gpio_num_d6, bit_data), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 	bit_data = (nibble_l >> 3) & 0x01;
-	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d7, hw_info.gpio_num_d7, bit_data), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_d7, hw_info.gpio_num_d7, bit_data), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 
-	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_en, hw_info.gpio_num_en, true), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_en, hw_info.gpio_num_en, true), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 	vTaskDelay(1 / portTICK_PERIOD_MS);
-	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_en, hw_info.gpio_num_en, false), LCD_WRITE_CMD_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!gpio_set_level(hw_info.gpio_port_en, hw_info.gpio_num_en, false), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 	vTaskDelay(1 / portTICK_PERIOD_MS);
 
 	return STM_OK;
 }
 
-stm_err_t _write_data_8bit(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd) 
+stm_err_t _write_data_8bit(lcd_hd44780_hardware_info_t hw_info, uint8_t data)
 {
 	return STM_OK;
 }
 
-stm_err_t _write_data_serial(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd) 
+stm_err_t _write_data_serial(lcd_hd44780_hardware_info_t hw_info, uint8_t data)
 {
+	uint8_t buf_send[4];
+	buf_send[0] = (data & 0xF0) | 0x0D;
+	buf_send[1] = (data & 0xF0) | 0x09;
+	buf_send[2] = ((data << 4) & 0xF0) | 0x0D;
+	buf_send[3] = ((data << 4) & 0xF0) | 0x09;
+
+	LCD_CHECK(!i2c_write_bytes(hw_info.i2c_num, LCD_I2C_ADDR, buf_send, 4, 100), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
+
 	return STM_OK;
 }
 
