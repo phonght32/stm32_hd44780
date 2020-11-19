@@ -139,6 +139,17 @@ stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str);
 stm_err_t lcd_hd44780_write_int(lcd_hd44780_handle_t handle, int number);
 
 /*
+ * @brief   Display float.
+ * @param   handle Handle structure.
+ * @param 	number Number as float format.
+ * @param 	precision Number of digit after decimal.
+ * @return
+ *      - STM_OK:   Success.
+ *      - Others: 	Fail.
+ */
+stm_err_t lcd_hd44780_write_float(lcd_hd44780_handle_t handle, float number, uint8_t precision);
+
+/*
  * @brief 	Move LCD's cursor to cordinate (x,y). 
  * @param   col Column position.
  * @param 	row Row position.

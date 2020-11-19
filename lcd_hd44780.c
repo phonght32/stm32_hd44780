@@ -16,6 +16,7 @@
 #define LCD_WRITE_STR_ERR_STR			"lcd write string error"
 #define LCD_WRITE_CHR_ERR_STR			"lcd write char error"
 #define LCD_WRITE_INT_ERR_STR			"lcd write integer error"
+#define LCD_WRITE_FLOAT_ERR_STR			"lcd write float error"
 #define LCD_CLEAR_ERR_STR				"lcd clear error"
 #define LCD_HOME_ERR_STR				"lcd home error"
 #define LCD_GOTOXY_ERR_STR				"lcd goto position (x,y) error"
@@ -529,6 +530,53 @@ stm_err_t lcd_hd44780_write_int(lcd_hd44780_handle_t handle, int number)
 	sprintf((char*)buf, "%d", number);
 
 	for (int i = 0; i < num_digit; i++) {
+		ret = handle->_write_data(handle->hw_info, buf[i]);
+		if (ret) {
+			STM_LOGE(TAG, LCD_WRITE_INT_ERR_STR);
+			mutex_unlock(handle->lock);
+			return STM_FAIL;
+		}
+	}
+
+	mutex_unlock(handle->lock);
+
+	return STM_OK;
+}
+
+stm_err_t lcd_hd44780_write_float(lcd_hd44780_handle_t handle, float number, uint8_t precision)
+{
+	/* Check input condition */
+	LCD_CHECK(handle, LCD_WRITE_INT_ERR_STR, return STM_ERR_INVALID_ARG);
+
+	mutex_lock(handle->lock);
+
+	int ret;
+
+	if (number < 0) {
+		ret = handle->_write_data(handle->hw_info, '-');
+		if (ret) {
+			STM_LOGE(TAG, LCD_WRITE_INT_ERR_STR);
+			mutex_unlock(handle->lock);
+			return STM_FAIL;
+		}
+		number *= -1;
+	}
+
+	int num_digit = 1;
+	int temp = (int)number;
+
+	while (temp > 9) {
+		num_digit++;
+		temp /= 10;
+	}
+
+	uint8_t buf[num_digit + 1 + precision];
+	uint8_t float_format[7];
+
+	sprintf((char*)float_format, "%%.%df", precision);
+	sprintf((char*)buf, (const char*)float_format, number);
+
+	for (int i = 0; i < (num_digit + 1 + precision); i++) {
 		ret = handle->_write_data(handle->hw_info, buf[i]);
 		if (ret) {
 			STM_LOGE(TAG, LCD_WRITE_INT_ERR_STR);
