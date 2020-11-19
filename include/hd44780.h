@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 
-#ifndef _LCD_H_
-#define _LCD_H_
+#ifndef _H_
+#define _H_
 
 #ifdef __cplusplus 
 extern "C" {
@@ -32,21 +32,21 @@ extern "C" {
 #include "driver/gpio.h"
 #include "driver/i2c.h"
 
-typedef struct lcd_hd44780 *lcd_hd44780_handle_t;	/* LCD handle structure */
+typedef struct hd44780 *hd44780_handle_t;	/* LCD handle structure */
 
 typedef enum {
-	LCD_HD44780_SIZE_16_2 = 0,						/*!< LCD size 16x2 */
-	LCD_HD44780_SIZE_16_4,							/*!< LCD size 16x4 */
-	LCD_HD44780_SIZE_20_4,							/*!< LCD size 20x4 */
-	LCD_HD44780_SIZE_MAX,
-} lcd_hd44780_size_t;
+	HD44780_SIZE_16_2 = 0,						/*!< LCD size 16x2 */
+	HD44780_SIZE_16_4,							/*!< LCD size 16x4 */
+	HD44780_SIZE_20_4,							/*!< LCD size 20x4 */
+	HD44780_SIZE_MAX,
+} hd44780_size_t;
 
 typedef enum {
-	LCD_HD44780_COMM_MODE_4BIT = 0,					/*!< Communicate with LCD over 4bit data mode */
-	LCD_HD44780_COMM_MODE_8BIT,						/*!< Communicate with LCD over 8bit data mode */
-	LCD_HD44780_COMM_MODE_SERIAL,					/*!< Communicate with LCD over serial data mode */
-	LCD_HD44780_COMM_MODE_MAX,
-} lcd_hd44780_comm_mode_t;
+	HD44780_COMM_MODE_4BIT = 0,					/*!< Communicate with LCD over 4bit data mode */
+	HD44780_COMM_MODE_8BIT,						/*!< Communicate with LCD over 8bit data mode */
+	HD44780_COMM_MODE_SERIAL,					/*!< Communicate with LCD over serial data mode */
+	HD44780_COMM_MODE_MAX,
+} hd44780_comm_mode_t;
 
 typedef struct {
 	int 				gpio_port_rs;				/*!< GPIO Port RS */
@@ -73,13 +73,13 @@ typedef struct {
 	int					gpio_num_d7;				/*!< GPIO Num D7 */
 	i2c_num_t			i2c_num;					/*!< I2C Num for serial mode*/
 	i2c_pins_pack_t		i2c_pins_pack;				/*!< I2C Pins Pack for serial mode */
-} lcd_hd44780_hardware_info_t;
+} hd44780_hardware_info_t;
 
 typedef struct {
-	lcd_hd44780_size_t 				size;			/*!< LCD size */
-	lcd_hd44780_comm_mode_t 		mode;			/*!< LCD communicate mode */
-	lcd_hd44780_hardware_info_t		hw_info;		/*!< LCD hardware information */
-} lcd_hd44780_cfg_t;
+	hd44780_size_t 				size;			/*!< LCD size */
+	hd44780_comm_mode_t 		mode;			/*!< LCD communicate mode */
+	hd44780_hardware_info_t		hw_info;		/*!< LCD hardware information */
+} hd44780_cfg_t;
 
 /*
  * @brief   Initialize Liquid-Crystal Display (LCD).
@@ -91,7 +91,7 @@ typedef struct {
  *      - LCD handle structure: Success.
  *      - 0: Fail.
  */
-lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config);
+hd44780_handle_t hd44780_init(hd44780_cfg_t *config);
 
 /*
  * @brief   Clear LCD screen.
@@ -100,7 +100,7 @@ lcd_hd44780_handle_t lcd_hd44780_init(lcd_hd44780_cfg_t *config);
  *      - STM_OK:   Success.
  *      - Others: 	Fail.
  */
-stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle);
+stm_err_t hd44780_clear(hd44780_handle_t handle);
 
 /*
  * @brief   Set LCD cursor to home.
@@ -109,7 +109,7 @@ stm_err_t lcd_hd44780_clear(lcd_hd44780_handle_t handle);
  *      - STM_OK:   Success.
  *      - Others: 	Fail.
  */
-stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle);
+stm_err_t hd44780_home(hd44780_handle_t handle);
 
 /*
  * @brief   Display a character.
@@ -119,7 +119,7 @@ stm_err_t lcd_hd44780_home(lcd_hd44780_handle_t handle);
  *      - STM_OK:   Success.
  *      - Others:	Fail.
  */
-stm_err_t lcd_hd44780_write_char(lcd_hd44780_handle_t handle, uint8_t chr);
+stm_err_t hd44780_write_char(hd44780_handle_t handle, uint8_t chr);
 
 /*
  * @brief   Display string.
@@ -129,7 +129,7 @@ stm_err_t lcd_hd44780_write_char(lcd_hd44780_handle_t handle, uint8_t chr);
  *      - STM_OK:   Success.
  *      - Others: 	Fail.
  */
-stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str);
+stm_err_t hd44780_write_string(hd44780_handle_t handle, uint8_t *str);
 
 /*
  * @brief   Display integer.
@@ -139,7 +139,7 @@ stm_err_t lcd_hd44780_write_string(lcd_hd44780_handle_t handle, uint8_t *str);
  *      - STM_OK:   Success.
  *      - Others: 	Fail.
  */
-stm_err_t lcd_hd44780_write_int(lcd_hd44780_handle_t handle, int number);
+stm_err_t hd44780_write_int(hd44780_handle_t handle, int number);
 
 /*
  * @brief   Display float.
@@ -150,7 +150,7 @@ stm_err_t lcd_hd44780_write_int(lcd_hd44780_handle_t handle, int number);
  *      - STM_OK:   Success.
  *      - Others: 	Fail.
  */
-stm_err_t lcd_hd44780_write_float(lcd_hd44780_handle_t handle, float number, uint8_t precision);
+stm_err_t hd44780_write_float(hd44780_handle_t handle, float number, uint8_t precision);
 
 /*
  * @brief 	Move LCD's cursor to cordinate (x,y). 
@@ -160,7 +160,7 @@ stm_err_t lcd_hd44780_write_float(lcd_hd44780_handle_t handle, float number, uin
  *      - STM_OK:   Success.
  *      - Others: 	Fail.
  */
-stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t row);
+stm_err_t hd44780_gotoxy(hd44780_handle_t handle, uint8_t col, uint8_t row);
 
 /*
  * @brief   Shift cursor forward.
@@ -170,7 +170,7 @@ stm_err_t lcd_hd44780_gotoxy(lcd_hd44780_handle_t handle, uint8_t col, uint8_t r
  *      - STM_OK:   Success.
  *      - Others: 	Fail.
  */
-stm_err_t lcd_hd44780_shift_cursor_forward(lcd_hd44780_handle_t handle, uint8_t step);
+stm_err_t hd44780_shift_cursor_forward(hd44780_handle_t handle, uint8_t step);
 
 /*
  * @brief   Shift cursor backward.
@@ -180,19 +180,19 @@ stm_err_t lcd_hd44780_shift_cursor_forward(lcd_hd44780_handle_t handle, uint8_t 
  *      - STM_OK:   Success.
  *      - Others: 	Fail.
  */
-stm_err_t lcd_hd44780_shift_cursor_backward(lcd_hd44780_handle_t handle, uint8_t step);
+stm_err_t hd44780_shift_cursor_backward(hd44780_handle_t handle, uint8_t step);
 
 /*
  * @brief   Destroy LCD handle structure.
  * @param   handle Handle structure.
  * @return	None.
  */
-void lcd_hd44780_destroy(lcd_hd44780_handle_t handle);
+void hd44780_destroy(hd44780_handle_t handle);
  
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _LCD_H_ */
+#endif /* _H_ */
 
