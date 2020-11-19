@@ -6,7 +6,7 @@
 #include "stm_log.h"
 #include "include/lcd_hd44780.h"
 
-#define LCD_TICK_DELAY_DEFAULT		50
+#define LCD_TICK_DELAY_DEFAULT		100
 #define LCD_I2C_ADDR				0x27
 
 #define LCD_INIT_ERR_STR				"lcd init error"
@@ -165,7 +165,7 @@ stm_err_t _write_cmd_serial(lcd_hd44780_hardware_info_t hw_info, uint8_t cmd)
 	buf_send[2] = ((cmd << 4) & 0xF0) | 0x04;
 	buf_send[3] = ((cmd << 4) & 0xF0) | 0x08;
 
-	LCD_CHECK(!i2c_write_bytes(hw_info.i2c_num, LCD_I2C_ADDR, buf_send, 4, 100), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!i2c_write_bytes(hw_info.i2c_num, LCD_I2C_ADDR, buf_send, 4, LCD_TICK_DELAY_DEFAULT), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 
 	return STM_OK;
 }
@@ -228,7 +228,7 @@ stm_err_t _write_data_serial(lcd_hd44780_hardware_info_t hw_info, uint8_t data)
 	buf_send[2] = ((data << 4) & 0xF0) | 0x0D;
 	buf_send[3] = ((data << 4) & 0xF0) | 0x09;
 
-	LCD_CHECK(!i2c_write_bytes(hw_info.i2c_num, LCD_I2C_ADDR, buf_send, 4, 100), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
+	LCD_CHECK(!i2c_write_bytes(hw_info.i2c_num, LCD_I2C_ADDR, buf_send, 4, LCD_TICK_DELAY_DEFAULT), LCD_WRITE_DATA_ERR_STR, return STM_FAIL);
 
 	return STM_OK;
 }
