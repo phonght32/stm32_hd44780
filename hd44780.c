@@ -28,7 +28,7 @@
 #define mutex_create()			xSemaphoreCreateMutex()
 #define mutex_destroy(x) 		vQueueDelete(x)
 
-static const char *TAG = "DRIVER";
+static const char *TAG = "DRIVER_LCD";
 
 #define CHECK(a, str, action) if(!(a)) {								\
 	STM_LOGE(TAG, "%s:%d (%s):%s", __FILE__, __LINE__, __FUNCTION__, str);	\
