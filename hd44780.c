@@ -165,7 +165,7 @@ stm_err_t _write_cmd_serial(hd44780_hardware_info_t hw_info, uint8_t cmd)
 	buf_send[2] = ((cmd << 4) & 0xF0) | 0x04;
 	buf_send[3] = ((cmd << 4) & 0xF0) | 0x08;
 
-	HD44780_CHECK(!i2c_write_bytes(hw_info.i2c_num, I2C_ADDR, buf_send, 4, TICK_DELAY_DEFAULT), WRITE_CMD_ERR_STR, return STM_FAIL);
+	HD44780_CHECK(!i2c_master_write_bytes(hw_info.i2c_num, I2C_ADDR, buf_send, 4, TICK_DELAY_DEFAULT), WRITE_CMD_ERR_STR, return STM_FAIL);
 
 	return STM_OK;
 }
@@ -228,7 +228,7 @@ stm_err_t _write_data_serial(hd44780_hardware_info_t hw_info, uint8_t data)
 	buf_send[2] = ((data << 4) & 0xF0) | 0x0D;
 	buf_send[3] = ((data << 4) & 0xF0) | 0x09;
 
-	HD44780_CHECK(!i2c_write_bytes(hw_info.i2c_num, I2C_ADDR, buf_send, 4, TICK_DELAY_DEFAULT), WRITE_DATA_ERR_STR, return STM_FAIL);
+	HD44780_CHECK(!i2c_master_write_bytes(hw_info.i2c_num, I2C_ADDR, buf_send, 4, TICK_DELAY_DEFAULT), WRITE_DATA_ERR_STR, return STM_FAIL);
 
 	return STM_OK;
 }
