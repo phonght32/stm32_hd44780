@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 
-#ifndef _H_
-#define _H_
+#ifndef _HD44780_H_
+#define _HD44780_H_
 
 #ifdef __cplusplus 
 extern "C" {
@@ -194,5 +194,5 @@ void hd44780_destroy(hd44780_handle_t handle);
 }
 #endif
 
-#endif /* _H_ */
+#endif /* _HD44780_H_ */
 
