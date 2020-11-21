@@ -37,7 +37,7 @@ hd44780_handle_t handle;
 
 static void example_task(void* arg)
 {
-    hd44780_hardware_info_t hw_info = {
+    hd44780_hw_info_t hw_info = {
         .gpio_port_rs = GPIO_PORT_A,
         .gpio_num_rs = GPIO_NUM_0,
         .gpio_port_rw = GPIO_PORT_A,
