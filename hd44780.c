@@ -35,15 +35,15 @@ static const char *TAG = "HD44780";
 	action;																	\
 }
 
-typedef stm_err_t (*init_func)(hd44780_hardware_info_t hw_info);
-typedef stm_err_t (*write_func)(hd44780_hardware_info_t hw_info, uint8_t data);
-typedef stm_err_t (*read_func)(hd44780_hardware_info_t hw_info, uint8_t *buf);
+typedef stm_err_t (*init_func)(hd44780_hw_info_t hw_info);
+typedef stm_err_t (*write_func)(hd44780_hw_info_t hw_info, uint8_t data);
+typedef stm_err_t (*read_func)(hd44780_hw_info_t hw_info, uint8_t *buf);
 typedef void (*wait_func)(hd44780_handle_t handle);
 
 typedef struct hd44780 {
 	hd44780_size_t 				size;
 	hd44780_comm_mode_t 		mode;
-	hd44780_hardware_info_t		hw_info;
+	hd44780_hw_info_t		hw_info;
 	write_func 						_write_cmd;
 	write_func 						_write_data;
 	wait_func 						_wait;
@@ -51,7 +51,7 @@ typedef struct hd44780 {
 } hd44780_t;
 
 
-stm_err_t _init_mode_4bit(hd44780_hardware_info_t hw_info)
+stm_err_t _init_mode_4bit(hd44780_hw_info_t hw_info)
 {
 	gpio_cfg_t gpio_cfg;
 	gpio_cfg.mode = GPIO_OUTPUT_PP;
@@ -97,17 +97,17 @@ stm_err_t _init_mode_4bit(hd44780_hardware_info_t hw_info)
 	return STM_OK;
 }
 
-stm_err_t _init_mode_8bit(hd44780_hardware_info_t hw_info)
+stm_err_t _init_mode_8bit(hd44780_hw_info_t hw_info)
 {
 	return STM_OK;
 }
 
-stm_err_t _init_mode_serial(hd44780_hardware_info_t hw_info)
+stm_err_t _init_mode_serial(hd44780_hw_info_t hw_info)
 {
 	return STM_OK;
 }
 
-stm_err_t _write_cmd_4bit(hd44780_hardware_info_t hw_info, uint8_t cmd)
+stm_err_t _write_cmd_4bit(hd44780_hw_info_t hw_info, uint8_t cmd)
 {
 	bool bit_data;
 	uint8_t nibble_h = cmd >> 4 & 0x0F;
@@ -152,12 +152,12 @@ stm_err_t _write_cmd_4bit(hd44780_hardware_info_t hw_info, uint8_t cmd)
 	return STM_OK;
 }
 
-stm_err_t _write_cmd_8bit(hd44780_hardware_info_t hw_info, uint8_t cmd)
+stm_err_t _write_cmd_8bit(hd44780_hw_info_t hw_info, uint8_t cmd)
 {
 	return STM_OK;
 }
 
-stm_err_t _write_cmd_serial(hd44780_hardware_info_t hw_info, uint8_t cmd)
+stm_err_t _write_cmd_serial(hd44780_hw_info_t hw_info, uint8_t cmd)
 {
 	uint8_t buf_send[4];
 	buf_send[0] = (cmd & 0xF0) | 0x04;
@@ -170,7 +170,7 @@ stm_err_t _write_cmd_serial(hd44780_hardware_info_t hw_info, uint8_t cmd)
 	return STM_OK;
 }
 
-stm_err_t _write_data_4bit(hd44780_hardware_info_t hw_info, uint8_t data)
+stm_err_t _write_data_4bit(hd44780_hw_info_t hw_info, uint8_t data)
 {
 	bool bit_data;
 	uint8_t nibble_h = data >> 4 & 0x0F;
@@ -215,12 +215,12 @@ stm_err_t _write_data_4bit(hd44780_hardware_info_t hw_info, uint8_t data)
 	return STM_OK;
 }
 
-stm_err_t _write_data_8bit(hd44780_hardware_info_t hw_info, uint8_t data)
+stm_err_t _write_data_8bit(hd44780_hw_info_t hw_info, uint8_t data)
 {
 	return STM_OK;
 }
 
-stm_err_t _write_data_serial(hd44780_hardware_info_t hw_info, uint8_t data)
+stm_err_t _write_data_serial(hd44780_hw_info_t hw_info, uint8_t data)
 {
 	uint8_t buf_send[4];
 	buf_send[0] = (data & 0xF0) | 0x0D;
@@ -233,7 +233,7 @@ stm_err_t _write_data_serial(hd44780_hardware_info_t hw_info, uint8_t data)
 	return STM_OK;
 }
 
-stm_err_t _read_4bit(hd44780_hardware_info_t hw_info, uint8_t *buf)
+stm_err_t _read_4bit(hd44780_hw_info_t hw_info, uint8_t *buf)
 {
 	gpio_cfg_t gpio_cfg;
 	bool bit_data;
@@ -321,7 +321,7 @@ stm_err_t _read_4bit(hd44780_hardware_info_t hw_info, uint8_t *buf)
 	return STM_OK;
 }
 
-stm_err_t _read_8bit(hd44780_hardware_info_t hw_info, uint8_t *buf)
+stm_err_t _read_8bit(hd44780_hw_info_t hw_info, uint8_t *buf)
 {
 	return STM_OK;
 }
@@ -393,7 +393,7 @@ static write_func _get_write_data_func(hd44780_comm_mode_t mode)
 	return NULL;
 }
 
-static wait_func _get_wait_func(hd44780_hardware_info_t hw_info)
+static wait_func _get_wait_func(hd44780_hw_info_t hw_info)
 {
 	if ((hw_info.gpio_port_rw == -1) && (hw_info.gpio_num_rw == -1)) {
 		return _wait_with_delay;
