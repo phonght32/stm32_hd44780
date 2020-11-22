@@ -415,30 +415,6 @@ hd44780_handle_t hd44780_init(hd44780_cfg_t *config)
 	HD44780_CHECK(config, INIT_ERR_STR, return NULL);
 	HD44780_CHECK(config->size < HD44780_SIZE_MAX, INIT_ERR_STR, return NULL);
 	HD44780_CHECK(config->mode < HD44780_COMM_MODE_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_port_rs < GPIO_PORT_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_num_rs < GPIO_NUM_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_port_rw < GPIO_PORT_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_num_rw < GPIO_NUM_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_port_en < GPIO_PORT_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_num_en < GPIO_NUM_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_port_d0 < GPIO_PORT_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_num_d0 < GPIO_NUM_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_port_d1 < GPIO_PORT_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_num_d1 < GPIO_NUM_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_port_d2 < GPIO_PORT_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_num_d2 < GPIO_NUM_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_port_d3 < GPIO_PORT_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_num_d3 < GPIO_NUM_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_port_d4 < GPIO_PORT_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_num_d4 < GPIO_NUM_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_port_d5 < GPIO_PORT_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_num_d5 < GPIO_NUM_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_port_d6 < GPIO_PORT_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_num_d6 < GPIO_NUM_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_port_d7 < GPIO_PORT_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.gpio_num_d7 < GPIO_NUM_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.i2c_num < I2C_NUM_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->hw_info.i2c_pins_pack < I2C_PINS_PACK_MAX, INIT_ERR_STR, return NULL);
 
 	/* Allocate memory for handle structure */
 	hd44780_handle_t handle = calloc(1, sizeof(hd44780_t));
