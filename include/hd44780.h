@@ -28,6 +28,7 @@
 extern "C" {
 #endif
 
+#include "stdbool.h"
 #include "stm_err.h"
 #include "driver/gpio.h"
 #include "driver/i2c.h"
@@ -73,6 +74,8 @@ typedef struct {
 	int					gpio_num_d7;				/*!< GPIO Num D7 */
 	i2c_num_t			i2c_num;					/*!< I2C Num for serial mode*/
 	i2c_pins_pack_t		i2c_pins_pack;				/*!< I2C Pins Pack for serial mode */
+	uint32_t			i2c_speed;					/*!< I2C speed */
+	bool				is_init;					/*!< Is hardware init */
 } hd44780_hw_info_t;
 
 typedef struct {

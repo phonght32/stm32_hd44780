@@ -104,7 +104,13 @@ stm_err_t _init_mode_8bit(hd44780_hw_info_t hw_info)
 
 stm_err_t _init_mode_serial(hd44780_hw_info_t hw_info)
 {
-	return STM_OK;
+	i2c_cfg_t i2c_cfg;
+    i2c_cfg.i2c_num = hw_info.i2c_num;
+    i2c_cfg.i2c_pins_pack = hw_info.i2c_pins_pack;
+    i2c_cfg.clk_speed = hw_info.i2c_speed;
+    HD44780_CHECK(!i2c_config(&i2c_cfg), INIT_ERR_STR, return STM_FAIL);
+
+    return STM_OK;
 }
 
 stm_err_t _write_cmd_4bit(hd44780_hw_info_t hw_info, uint8_t cmd)
@@ -420,9 +426,6 @@ hd44780_handle_t hd44780_init(hd44780_cfg_t *config)
 	hd44780_handle_t handle = calloc(1, sizeof(hd44780_t));
 	HD44780_CHECK(handle, INIT_ERR_STR, return NULL);
 
-	init_func _init_func = _get_init_func(config->comm_mode);
-	write_func _write_cmd = _get_write_cmd_func(config->comm_mode);
-
 	/* Make sure that RS pin not used in serial mode */
 	if (config->comm_mode == HD44780_COMM_MODE_SERIAL) {
 		config->hw_info.gpio_port_rw = -1;
@@ -430,8 +433,13 @@ hd44780_handle_t hd44780_init(hd44780_cfg_t *config)
 	}
 
 	/* Configure hw_infos */
-	HD44780_CHECK(!_init_func(config->hw_info), INIT_ERR_STR, {_hd44780_cleanup(handle); return NULL;});
+	if(!config->hw_info.is_init) {
+		init_func _init_func = _get_init_func(config->comm_mode);
+		HD44780_CHECK(!_init_func(config->hw_info), INIT_ERR_STR, {_hd44780_cleanup(handle); return NULL;});
+	}
 
+	write_func _write_cmd = _get_write_cmd_func(config->comm_mode);
+	
 	HD44780_CHECK(!_write_cmd(config->hw_info, 0x02), INIT_ERR_STR, {_hd44780_cleanup(handle); return NULL;});
 	vTaskDelay(TICK_DELAY_DEFAULT / portTICK_PERIOD_MS);
 
