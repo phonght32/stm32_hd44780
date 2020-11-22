@@ -47,7 +47,7 @@ static void example_task(void* arg)
     i2c_cfg.clk_speed = 100000;
     i2c_config(&i2c_cfg);
     
-    hd44780_hardware_info_t hw_info = {
+    hd44780_hw_info_t hw_info = {
         .i2c_num = I2C_NUM,
         .i2c_pins_pack = I2C_PINS_PACK,
     };
