@@ -31,7 +31,7 @@
 #define TASK_SIZE   1024
 #define TASK_PRIOR  5
 
-#define I2C_NUM         I2C_NUM_1
+#define I2C_NUM         I2C_NUM_2
 #define I2C_PINS_PACK   I2C_PINS_PACK_1
 
 static const char *TAG = "APP_MAIN";
@@ -39,17 +39,11 @@ static const char *TAG = "APP_MAIN";
 hd44780_handle_t handle;
 
 static void example_task(void* arg)
-{
-    /* Configure I2C driver */
-    i2c_cfg_t i2c_cfg;
-    i2c_cfg.i2c_num = I2C_NUM;
-    i2c_cfg.i2c_pins_pack = I2C_PINS_PACK;
-    i2c_cfg.clk_speed = 100000;
-    i2c_config(&i2c_cfg);
-    
+{    
     hd44780_hw_info_t hw_info = {
         .i2c_num = I2C_NUM,
         .i2c_pins_pack = I2C_PINS_PACK,
+        .i2c_speed = 400000,
     };
 
     hd44780_cfg_t config = {
