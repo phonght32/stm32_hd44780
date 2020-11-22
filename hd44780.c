@@ -42,12 +42,12 @@ typedef void (*wait_func)(hd44780_handle_t handle);
 
 typedef struct hd44780 {
 	hd44780_size_t 				size;
-	hd44780_comm_mode_t 		mode;
-	hd44780_hw_info_t		hw_info;
-	write_func 						_write_cmd;
-	write_func 						_write_data;
-	wait_func 						_wait;
-	SemaphoreHandle_t				lock;
+	hd44780_comm_mode_t 		comm_mode;
+	hd44780_hw_info_t			hw_info;
+	write_func 					_write_cmd;
+	write_func 					_write_data;
+	wait_func 					_wait;
+	SemaphoreHandle_t			lock;
 } hd44780_t;
 
 
@@ -336,9 +336,9 @@ static void _wait_with_pinrw(hd44780_handle_t handle)
 	read_func _read;
 	uint8_t temp_val;
 
-	if (handle->mode == HD44780_COMM_MODE_4BIT) {
+	if (handle->comm_mode == HD44780_COMM_MODE_4BIT) {
 		_read = _read_4bit;
-	} else if (handle->mode == HD44780_COMM_MODE_8BIT) {
+	} else if (handle->comm_mode == HD44780_COMM_MODE_8BIT) {
 		_read = _read_8bit;
 	} else {
 		_read = NULL;
@@ -354,11 +354,11 @@ static void _wait_with_pinrw(hd44780_handle_t handle)
 	}
 }
 
-static init_func _get_init_func(hd44780_comm_mode_t mode)
+static init_func _get_init_func(hd44780_comm_mode_t comm_mode)
 {
-	if (mode == HD44780_COMM_MODE_4BIT) {
+	if (comm_mode == HD44780_COMM_MODE_4BIT) {
 		return _init_mode_4bit;
-	} else if (mode == HD44780_COMM_MODE_8BIT) {
+	} else if (comm_mode == HD44780_COMM_MODE_8BIT) {
 		return _init_mode_8bit;
 	} else {
 		return _init_mode_serial;
@@ -367,11 +367,11 @@ static init_func _get_init_func(hd44780_comm_mode_t mode)
 	return NULL;
 }
 
-static write_func _get_write_cmd_func(hd44780_comm_mode_t mode)
+static write_func _get_write_cmd_func(hd44780_comm_mode_t comm_mode)
 {
-	if (mode == HD44780_COMM_MODE_4BIT) {
+	if (comm_mode == HD44780_COMM_MODE_4BIT) {
 		return _write_cmd_4bit;
-	} else if (mode == HD44780_COMM_MODE_8BIT) {
+	} else if (comm_mode == HD44780_COMM_MODE_8BIT) {
 		return _write_cmd_8bit;
 	} else {
 		return _write_cmd_serial;
@@ -380,11 +380,11 @@ static write_func _get_write_cmd_func(hd44780_comm_mode_t mode)
 	return NULL;
 }
 
-static write_func _get_write_data_func(hd44780_comm_mode_t mode)
+static write_func _get_write_data_func(hd44780_comm_mode_t comm_mode)
 {
-	if (mode == HD44780_COMM_MODE_4BIT) {
+	if (comm_mode == HD44780_COMM_MODE_4BIT) {
 		return _write_data_4bit;
-	} else if (mode == HD44780_COMM_MODE_8BIT) {
+	} else if (comm_mode == HD44780_COMM_MODE_8BIT) {
 		return _write_data_8bit;
 	} else {
 		return _write_data_serial;
@@ -414,17 +414,17 @@ hd44780_handle_t hd44780_init(hd44780_cfg_t *config)
 	/* Check input condition */
 	HD44780_CHECK(config, INIT_ERR_STR, return NULL);
 	HD44780_CHECK(config->size < HD44780_SIZE_MAX, INIT_ERR_STR, return NULL);
-	HD44780_CHECK(config->mode < HD44780_COMM_MODE_MAX, INIT_ERR_STR, return NULL);
+	HD44780_CHECK(config->comm_mode < HD44780_COMM_MODE_MAX, INIT_ERR_STR, return NULL);
 
 	/* Allocate memory for handle structure */
 	hd44780_handle_t handle = calloc(1, sizeof(hd44780_t));
 	HD44780_CHECK(handle, INIT_ERR_STR, return NULL);
 
-	init_func _init_func = _get_init_func(config->mode);
-	write_func _write_cmd = _get_write_cmd_func(config->mode);
+	init_func _init_func = _get_init_func(config->comm_mode);
+	write_func _write_cmd = _get_write_cmd_func(config->comm_mode);
 
 	/* Make sure that RS pin not used in serial mode */
-	if (config->mode == HD44780_COMM_MODE_SERIAL) {
+	if (config->comm_mode == HD44780_COMM_MODE_SERIAL) {
 		config->hw_info.gpio_port_rw = -1;
 		config->hw_info.gpio_num_rw = -1;
 	}
@@ -449,10 +449,10 @@ hd44780_handle_t hd44780_init(hd44780_cfg_t *config)
 
 	/* Update handle structure */
 	handle->size = config->size;
-	handle->mode = config->mode;
+	handle->comm_mode = config->comm_mode;
 	handle->hw_info = config->hw_info;
-	handle->_write_cmd = _get_write_cmd_func(config->mode);
-	handle->_write_data = _get_write_data_func(config->mode);
+	handle->_write_cmd = _get_write_cmd_func(config->comm_mode);
+	handle->_write_data = _get_write_data_func(config->comm_mode);
 	handle->_wait = _get_wait_func(config->hw_info);
 	handle->lock = mutex_create();
 

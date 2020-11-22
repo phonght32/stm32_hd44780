@@ -77,7 +77,7 @@ typedef struct {
 
 typedef struct {
 	hd44780_size_t 				size;			/*!< LCD size */
-	hd44780_comm_mode_t 		mode;			/*!< LCD communicate mode */
+	hd44780_comm_mode_t 		comm_mode;		/*!< LCD communicate mode */
 	hd44780_hw_info_t			hw_info;		/*!< LCD hardware information */
 } hd44780_cfg_t;
 

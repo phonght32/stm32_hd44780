@@ -56,7 +56,7 @@ static void example_task(void* arg)
 
     hd44780_cfg_t config = {
         .size = HD44780_SIZE_16_2,
-        .mode = HD44780_COMM_MODE_4BIT,
+        .comm_mode = HD44780_COMM_MODE_4BIT,
         .hw_info = hw_info,
     };
 
