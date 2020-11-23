@@ -731,5 +731,5 @@ stm_err_t hd44780_shift_cursor_backward(hd44780_handle_t handle, uint8_t step)
 
 void hd44780_destroy(hd44780_handle_t handle)
 {
-	free(handle);
+	_hd44780_cleanup(handle);
 }
